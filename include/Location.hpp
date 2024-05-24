@@ -1,7 +1,7 @@
 #ifndef WS_LOCATION_HPP
 # define WS_LOCATION_HPP
 
-#include <cstring>
+#include <string>
 
 // listen x
 // server_name y z
@@ -20,18 +20,23 @@ class Location {
 	public:
 		Location(std::string path);
 
-		bool setMethods(bool get, bool post, bool delete);
+		bool setMethods(bool get, bool post, bool del);
 		bool setRedirection();
 		bool setRoot(std::string rootpath);
 		bool setDirectoryList(bool yesno);
 		bool setDefaultIndex(std::string indexfilepath);
 		bool setRequestMethod();
-		bool setCGI();
+		bool setCGI(std::string extension);
 		
 		const std::string path;
 
 		private:
-		
+
+		bool get, post, del;
+		std::string redirection;
+		std::string rootpath;
+		bool dir_list;
+		std::string index_file;	
 };
 
 #endif
