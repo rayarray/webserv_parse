@@ -29,6 +29,7 @@ class Server {
 
 		const std::string listen_name;
 		const size_t port;
+		const std::string error_page;
 };
 
 #endif

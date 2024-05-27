@@ -1,7 +1,7 @@
 #ifndef WS_CONFIGPARSER_HPP
 # define WS_CONFIGPARSER_HPP
 
-#include <cstring>
+#include <string>
 #include <fstream>
 #include "Server.hpp"
 
@@ -16,13 +16,18 @@ class ConfigParser {
 
 		bool startParse();
 		bool getServer(Server &server);
+		bool endParse();
 
 		std::string _error;
 
 	private:
+		bool handleConfig();
+		bool checkServer();
+		bool skipWhiteSpace();
+		bool skipWhiteSpaceLines();
 		std::ifstream _cfile;
 		std::string _line;
-		int	_pos;
+		size_t _pos;
 };
 
 #endif
