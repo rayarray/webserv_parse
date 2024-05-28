@@ -1,0 +1,14 @@
+# INTERNAL FILE, DO NOT REMOVE OR MODIFY
+http S
+server S
+HTTP
+SERVER
+listen T
+server_name TT
+location T S
+location C T S
+error_page N T
+LOCATION
+root T
+rewrite T
+method TT

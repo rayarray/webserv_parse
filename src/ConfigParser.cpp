@@ -14,8 +14,14 @@ ConfigParser::~ConfigParser() {
 }
 
 bool ConfigParser::getConfigSets() {
-	std::ifstream config_file("config_values");
+	std::ifstream config_file(CONFIG_DEFAULTS);
 	if (!config_file) return (_error = "Error opening config values file", false);
+	if (!std::getline(config_file, _line)) return (_error = "Invalid config defaults file", false);
+	while (std::getline(config_file, _line))
+		config_defaults.push_back(_line);
+	for (const std::string& line : config_defaults) {
+		std::cout << line << std::endl;
+	}
 	return true;
 }
 
@@ -48,6 +54,8 @@ bool ConfigParser::endParse() {
 // 	}
 // 	return (std::cout << "handleConf: [" << _line.substr(_pos, _end - _pos) << "]" << std::endl, _pos = _line.size(), true);
 // }
+
+void ConfigParser::addConfigSet() {}
 
 bool ConfigParser::handleConfig() { 
 	if (ws_checkword(_line.substr(_pos, std::string::npos), top_level))

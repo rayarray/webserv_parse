@@ -15,7 +15,6 @@
 // usage: create instance with config file path, 
 // start parsing with startParse which returns true if valid conf
 // get servers with getServer, returns false when last server reached
-// 
 class ConfigParser {
 	public:
 		ConfigParser(const std::string &filepath);
@@ -29,6 +28,7 @@ class ConfigParser {
 		std::string _error;
 
 	private:
+		void addConfigSet();
 		bool handleConfig();
 		bool checkServer();
 		bool skipWhiteSpace();
@@ -41,7 +41,7 @@ class ConfigParser {
 			{"http", "server", "default"};
 		const std::vector<const std::string> http_conf =
 			{"foobar"};
-		const std::vector<const std::string> config_sets;
+		std::vector<std::string> config_defaults;
 };
 
 #endif

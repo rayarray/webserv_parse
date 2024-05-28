@@ -13,6 +13,8 @@
 # define REQ_CGI -2
 # define REQ_INVALID -100
 
+# define CONFIG_DEFAULTS "config_defaults"
+
 class Request {
 	public:
 		Request();
