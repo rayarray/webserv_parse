@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include "Location.hpp"
+#include "Request.hpp"
 
 // listen x
 // server_name y z
@@ -19,17 +20,22 @@
 
 class Server {
 	public:
-		Server(std::string listen);
+		Server(const std::string listen, const size_t port);
 
+		// methods for setting up
 		bool addServerName(std::string name);
 		bool errorPage(std::string file_path);
 		bool clientMaxBodySize(size_t size);
 
 		bool addLocation(Location location);
 
-		const std::string listen_name;
-		const size_t port;
-		const std::string error_page;
+		// accessed after setup
+		bool matchRequest(const std::string server_name, const size_t port);
+		Request resolveRequest(const std::string request);
+
+		const std::string _listen_name;
+		const size_t _port;
+		const std::string _error_page;
 };
 
 #endif

@@ -1,19 +1,10 @@
 #include <iostream> // for debug
+#include "ws_functions.hpp"
 #include "ConfigParser.hpp"
 
 // usage: create instance with config file path, 
 // start parsing with startParse which returns true if valid conf
 // get servers with getServer, returns false when last server reached
-
-inline bool ws_wspace(char c) { return (c == ' ' || c == '\t'); }
-
-inline bool ws_checkword(const std::string &s, const std::vector<const std::string> &list) {
-	for (const std::string& word : list) {
-		if (s.find(word) == 0)
-			return true;
-	}
-	return false;
-}
 
 ConfigParser::ConfigParser(const std::string &filepath) : _cfile(filepath), _pos(0) {}
 
