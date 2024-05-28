@@ -2,24 +2,20 @@
 #include "ws_functions.hpp"
 #include "ConfigParser.hpp"
 
-// usage: create instance with config file path, 
-// start parsing with startParse which returns true if valid conf
-// get servers with getServer, returns false when last server reached
-
 ConfigParser::ConfigParser(const std::string &filepath) : _cfile(filepath), _pos(0) {}
 
 ConfigParser::~ConfigParser() {
-	if (_cfile)
-		_cfile.close();
+	if (_cfile) _cfile.close();
 }
 
 bool ConfigParser::getConfigSets() {
 	std::ifstream config_file(CONFIG_DEFAULTS);
 	if (!config_file) return (_error = "Error opening config values file", false);
-	if (!std::getline(config_file, _line)) return (_error = "Invalid config defaults file", false);
+	if (!std::getline(config_file, _line) || _line != "# INTERNAL FILE, DO NOT MODIFY") 
+		return (_error = "Invalid config defaults file", false);
 	while (std::getline(config_file, _line))
 		config_defaults.push_back(_line);
-	for (const std::string& line : config_defaults) {
+	for (const std::string& line : config_defaults) { // print config_defaults
 		std::cout << line << std::endl;
 	}
 	return true;
@@ -30,7 +26,7 @@ bool ConfigParser::startParse() {
 	std::getline(_cfile, _line);
 	while (!skipWhiteSpaceLines()) {
 		if (!handleConfig())
-			return (checkServer());
+			return (_error = "Config did not contain any server sections", checkServer());
 	}
 	_error = _line;
 	return true;
@@ -42,6 +38,7 @@ bool ConfigParser::getServer(Server &server) { (void)server;
 }
 
 bool ConfigParser::endParse() {
+	if (_cfile) _cfile.close();
 	return true;
 }
 
@@ -58,7 +55,7 @@ bool ConfigParser::endParse() {
 void ConfigParser::addConfigSet() {}
 
 bool ConfigParser::handleConfig() { 
-	if (ws_checkword(_line.substr(_pos, std::string::npos), top_level))
+	if (ws_checkword(_line.substr(_pos, std::string::npos), config_defaults))
 		return (std::cout << "handleconf: true" << std::endl, _pos = _line.size(), true);
 	return (std::cout << "handleconf: false" << std::endl, _pos = _line.size(), false);
 }
@@ -82,7 +79,7 @@ bool ConfigParser::skipWhiteSpaceLines() {
 	while (skipWhiteSpace()) {
 		_pos = 0;
 		if (!std::getline(_cfile, _line)) {
-			//std::cout << "skipWSL: false" << std::endl;
+			//std::cout << "skipWSL: true" << std::endl;
 			return true;
 		}
 	}

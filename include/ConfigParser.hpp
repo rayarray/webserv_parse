@@ -6,15 +6,10 @@
 # include <vector>
 # include "Server.hpp"
 
-# define CONFIG_SETS = \
-	"#DEFAULT CONFIG VALUES, DO NOT CHANGE OR MODIFY" \
-	"HTTP 1" \
-	"DEFAULTS 9" \
-	"SERVER 9"
-
 // usage: create instance with config file path, 
-// start parsing with startParse which returns true if valid conf
-// get servers with getServer, returns false when last server reached
+// start parsing with startParse() which returns true if valid conf
+// get servers with getServer(), returns false when last server reached
+// finish parse with endParse(), returns true if parsing finished successfully
 class ConfigParser {
 	public:
 		ConfigParser(const std::string &filepath);
@@ -37,10 +32,10 @@ class ConfigParser {
 		std::string _line;
 		size_t _pos;
 
-		const std::vector<const std::string> top_level = 
-			{"http", "server", "default"};
-		const std::vector<const std::string> http_conf =
-			{"foobar"};
+		// const std::vector<const std::string> top_level = 
+		// 	{"http", "server", "default"};
+		// const std::vector<const std::string> http_conf =
+		// 	{"foobar"};
 		std::vector<std::string> config_defaults;
 };
 
