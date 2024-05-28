@@ -1,5 +1,7 @@
-#include <vector>
-#include <string>
+#ifndef WS_WS_FUNCTIONS_HPP
+# define WS_WS_FUNCTIONS_HPP
+# include <vector>
+# include <string>
 
 inline bool ws_wspace(char c) { return (c == ' ' || c == '\t'); }
 
@@ -11,3 +13,4 @@ inline bool ws_checkword(const std::string &s, const std::vector<const std::stri
 	return false;
 }
 
+#endif
