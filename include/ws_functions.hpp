@@ -30,4 +30,18 @@ inline std::string ws_toupper(const std::string &s) {
 	return s_up;
 }
 
+//checks if endline reached (# counts as endline)
+inline bool ws_endl(const std::string &s, const size_t pos) {
+	if (pos > s.size() || s.at(pos) == '#')
+		return true;
+	return false;
+}
+
+// return size of string, excluding comments (comments start with #)
+inline size_t ws_size(const std::string &s) {
+	size_t end = 0;
+	while (end < s.size() && s.at(end) != '#')
+		end++;
+	return end;
+}
 #endif

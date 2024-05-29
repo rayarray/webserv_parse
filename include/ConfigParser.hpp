@@ -26,11 +26,13 @@ class ConfigParser {
 		bool handleConfig();
 		bool handleConfig(size_t index);
 		bool handleSubConfig(size_t index);
-		bool checkSyntax(size_t index);
+		bool checkSyntax(const size_t index);
+		bool checkSyntax(size_t index, bool repeat);
+		bool checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index);
 		bool checkServer();
 		bool skipWhiteSpace();
 		bool skipWhiteSpaceLines();
-		
+
 		std::ifstream _cfile;
 		std::string _line;
 		size_t _pos;
