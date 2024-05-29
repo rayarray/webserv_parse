@@ -15,7 +15,6 @@ class ConfigParser {
 		ConfigParser(const std::string &filepath);
 		~ConfigParser();
 
-		bool getConfigSets();
 		bool startParse();
 		bool getServer(Server &server);
 		bool endParse();
@@ -23,19 +22,16 @@ class ConfigParser {
 		std::string _error;
 
 	private:
-		void addConfigSet();
+		bool getConfigSets();
 		bool handleConfig();
 		bool checkServer();
+		bool checkSyntax();
 		bool skipWhiteSpace();
 		bool skipWhiteSpaceLines();
 		std::ifstream _cfile;
 		std::string _line;
 		size_t _pos;
 
-		// const std::vector<const std::string> top_level = 
-		// 	{"http", "server", "default"};
-		// const std::vector<const std::string> http_conf =
-		// 	{"foobar"};
 		std::vector<std::string> config_defaults;
 };
 

@@ -23,10 +23,11 @@ bool ConfigParser::getConfigSets() {
 
 bool ConfigParser::startParse() {
 	if (!_cfile) return (_error = "Error opening config file", false);
+	if (!getConfigSets()) return (false);
 	std::getline(_cfile, _line);
 	while (!skipWhiteSpaceLines()) {
 		if (!handleConfig())
-			return (_error = "Config did not contain any server sections", checkServer());
+			return (_error = "Config error: " + _error, checkServer());
 	}
 	_error = _line;
 	return true;
@@ -52,9 +53,7 @@ bool ConfigParser::endParse() {
 // 	return (std::cout << "handleConf: [" << _line.substr(_pos, _end - _pos) << "]" << std::endl, _pos = _line.size(), true);
 // }
 
-void ConfigParser::addConfigSet() {}
-
-bool ConfigParser::handleConfig() { 
+bool ConfigParser::handleConfig() {
 	if (ws_checkword(_line.substr(_pos, std::string::npos), config_defaults))
 		return (std::cout << "handleconf: true" << std::endl, _pos = _line.size(), true);
 	return (std::cout << "handleconf: false" << std::endl, _pos = _line.size(), false);

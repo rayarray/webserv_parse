@@ -1,11 +1,11 @@
 #include <iostream>
+#include "ws_functions.hpp"
 #include "ConfigParser.hpp"
 
 // main for testing configparser, reads default.conf in current directory
 
 int main(void) {
 	ConfigParser conf("default.conf");
-	conf.getConfigSets();
 	std::cout << std::boolalpha << "ConfigParser.startParse() = " << conf.startParse() << std::endl;
 	std::cout << "MAIN: _line: [" << conf._error << "]" << std::endl;
 
@@ -17,6 +17,6 @@ int main(void) {
 	if (localhost.matchRequest(request_hostname, 80)) {
 		request = localhost.resolveRequest(request_path);
 		std::cout << "MAIN: request path: " << request.getPath() << std::endl;
-	} 
-
+	}
+	std::cout << "ws_toupper test: " << ws_toupper("server") << std::endl;
 }
