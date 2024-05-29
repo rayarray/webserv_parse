@@ -5,21 +5,21 @@
 
 inline bool ws_wspace(char c) { return (c == ' ' || c == '\t'); }
 
-inline bool ws_checkword(const std::string &s, const std::vector<std::string> &list) {
-	for (const std::string& word : list) {
-		if (s.find(word) == 0)
+inline bool ws_checkword(const std::string &s, const std::vector<std::string> &list, size_t &index) {
+	for (index = 0; index < list.size(); index++) {
+		if (s.find(list.at(index))) {
 			return true;
+		}
 	}
 	return false;
 }
 
 // checks if word is found in vector, searches only until first char in vector elem is not uppercase
-inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list) {
-	for (const std::string& word : list) {
-		if (std::isupper(s.at(0))) 
-			return false;
-		if (s.find(word) == 0)
+inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index) {
+	for (index = 0; index < list.size() && !std::isupper(list.at(index).at(0)); index++) {
+		if (s.find(list.at(index))) {
 			return true;
+		}
 	}
 	return false;
 }

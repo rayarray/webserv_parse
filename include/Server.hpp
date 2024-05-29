@@ -33,9 +33,13 @@ class Server {
 		bool matchRequest(const std::string server_name, const size_t port);
 		Request resolveRequest(const std::string request);
 
+	private:
+		bool matchLocation(const std::string path);
+
 		const std::string _listen_name;
 		const size_t _port;
 		const std::string _error_page;
+		std::vector<Location> locations;
 };
 
 #endif

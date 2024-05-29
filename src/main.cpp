@@ -7,7 +7,7 @@
 int main(void) {
 	ConfigParser conf("default.conf");
 	std::cout << std::boolalpha << "ConfigParser.startParse() = " << conf.startParse() << std::endl;
-	std::cout << "MAIN: _line: [" << conf._error << "]" << std::endl;
+	//std::cout << "MAIN: _line: [" << conf._error << "]" << std::endl;
 
 	// example request resolve from server
 	Server localhost("localhost", 80);
@@ -16,7 +16,7 @@ int main(void) {
 	const std::string request_path("/index.html");
 	if (localhost.matchRequest(request_hostname, 80)) {
 		request = localhost.resolveRequest(request_path);
-		std::cout << "MAIN: request path: " << request.getPath() << std::endl;
+		//std::cout << "MAIN: request path: " << request.getPath() << std::endl;
 	}
-	std::cout << "ws_toupper test: " << ws_toupper("server") << std::endl;
+	//std::cout << "ws_toupper test: " << ws_toupper("server") << std::endl;
 }

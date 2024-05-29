@@ -15,9 +15,9 @@ bool ConfigParser::getConfigSets() {
 		return (_error = "Invalid config defaults file", false);
 	while (std::getline(config_file, _line))
 		config_defaults.push_back(_line);
-	for (const std::string& line : config_defaults) { // print config_defaults
-		std::cout << line << std::endl;
-	}
+	//for (const std::string& line : config_defaults) { // print config_defaults
+	//	std::cout << line << std::endl;
+	//}
 	return true;
 }
 
@@ -54,9 +54,13 @@ bool ConfigParser::endParse() {
 // }
 
 bool ConfigParser::handleConfig() {
-	if (ws_checkword(_line.substr(_pos, std::string::npos), config_defaults))
-		return (std::cout << "handleconf: true" << std::endl, _pos = _line.size(), true);
-	return (std::cout << "handleconf: false" << std::endl, _pos = _line.size(), false);
+	size_t cfg_index;
+	if (ws_checkword_lower(_line.substr(_pos, std::string::npos), config_defaults, cfg_index)) {
+		std::cout << "handleConfig match, index " << cfg_index << ", word " << config_defaults.at(cfg_index) << std::endl;
+		_pos = _line.size();
+		return true;
+	}
+	return false;
 }
 
 bool ConfigParser::checkServer() {
@@ -77,11 +81,8 @@ bool ConfigParser::skipWhiteSpace() {
 bool ConfigParser::skipWhiteSpaceLines() {
 	while (skipWhiteSpace()) {
 		_pos = 0;
-		if (!std::getline(_cfile, _line)) {
-			//std::cout << "skipWSL: true" << std::endl;
+		if (!std::getline(_cfile, _line))
 			return true;
-		}
 	}
-	//std::cout << "skipWSL: false" << std::endl;
 	return false;
 }
