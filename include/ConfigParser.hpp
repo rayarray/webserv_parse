@@ -24,15 +24,19 @@ class ConfigParser {
 	private:
 		bool getConfigSets();
 		bool handleConfig();
+		bool handleConfig(size_t index);
+		bool handleSubConfig(size_t index);
+		bool checkSyntax(size_t index);
 		bool checkServer();
-		bool checkSyntax();
 		bool skipWhiteSpace();
 		bool skipWhiteSpaceLines();
+		
 		std::ifstream _cfile;
 		std::string _line;
 		size_t _pos;
+		size_t _server_index;
 
-		std::vector<std::string> config_defaults;
+		std::vector<std::string> _config_defaults;
 };
 
 #endif
