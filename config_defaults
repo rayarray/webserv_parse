@@ -2,6 +2,7 @@
 http S
 server S
 HTTP
+max_client_body_size N
 SERVER
 listen T
 server_name TT

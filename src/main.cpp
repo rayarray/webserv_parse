@@ -5,9 +5,11 @@
 // main for testing configparser, reads default.conf in current directory
 
 int main(void) {
-	ConfigParser conf("default.conf");
+	ConfigParser conf("server.conf");
 	bool start_parse = conf.startParse();
 	std::cout << std::boolalpha << "ConfigParser.startParse() = " << start_parse << std::endl;
+	if (!start_parse)
+		std::cout << "MAIN: conf._error: " << conf._error << std::endl;
 	//std::cout << "MAIN: _line: [" << conf._error << "]" << std::endl;
 
 	// example request resolve from server

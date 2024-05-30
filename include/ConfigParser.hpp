@@ -29,7 +29,7 @@ class ConfigParser {
 		bool checkSyntax(const size_t index);
 		bool checkSyntax(size_t index, bool repeat);
 		bool checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index);
-		bool checkServer();
+		bool checkServer(size_t index);
 		bool skipWhiteSpace();
 		bool skipWhiteSpaceLines();
 

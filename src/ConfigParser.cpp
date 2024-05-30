@@ -29,14 +29,16 @@ bool ConfigParser::startParse() {
 	std::getline(_cfile, _line);
 	while (!skipWhiteSpaceLines()) {
 		if (!handleConfig())
-			return (_error = "Config error: " + _error, checkServer());
+			return (std::cout << "startParse: returning checkServer()" << std::endl, _error = "Config error: " + _error, checkServer(_pos));
 	}
 	_error = _line;
+	std::cout << "startParse successful" << std::endl;
 	return true;
 }
 
 
 bool ConfigParser::getServer(Server &server) { (void)server;
+
 	return true;
 }
 
@@ -57,6 +59,7 @@ bool ConfigParser::endParse() {
 
 bool ConfigParser::handleConfig() {
 	size_t cfg_index;
+	std::cout << "handleConfig: _line: " << _line << std::endl;
 	if (ws_checkword_lower(_line.substr(_pos, std::string::npos), _config_defaults, cfg_index)) {
 		std::cout << "handleConfig match, index " << cfg_index << ", word " << _config_defaults.at(cfg_index) << std::endl;
 		if (_config_defaults.at(cfg_index).back() == 'S' && !handleSubConfig(cfg_index))
@@ -106,29 +109,55 @@ bool ConfigParser::checkSyntax(const size_t index) {
 	return (_pos = store_pos, true);
 }
 
-bool ConfigParser::checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index) {
+bool ConfigParser::checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index) { std::cout << "checkSyntaxType called" << std::endl;
 	const size_t cfg_start = cfg_index;
+	bool quotes = false;
 	switch (_config_defaults.at(index).at(index_pos)) {
 		case 'N':
-			while (!ws_endl(_line, index_pos) && std::isdigit(_line.at(index_pos)))
+			while (!ws_endl(_line, cfg_index) && std::isdigit(_line.at(cfg_index)))
 				cfg_index++;
 			if (cfg_index - cfg_start > 10)
 				return (_error = "Too many digits in numeric value", false);
 			if (!ws_endl(_line, cfg_index) && (_line.at(cfg_index) == 'k' || _line.at(cfg_index) == 'M'))
 				cfg_index++;
+			if (ws_endl(_line, cfg_index) || ws_wspace(_line.at(cfg_index)))
+				return true;
 			break;
 		case 'T':
+			while ((!ws_endl(_line, cfg_index) || (quotes && cfg_index < _line.size())) && 
+					(!ws_wspace(_line.at(cfg_index) || quotes) && std::isprint(_line.at(cfg_index)))) {
+				if (_line.at(cfg_index) == '"')
+					quotes = (!quotes) ? true : false;
+				cfg_index++;
+				if (!quotes && (ws_endl(_line, cfg_index) || ws_wspace(_line.at(cfg_index))))
+					return true;
+			}
 			break;
 		case 'S':
+			if (!ws_endl(_line, cfg_index) && _line.at(cfg_index) == '{' && ++cfg_index) {
+				while (!ws_endl(_line, cfg_index) || ws_wspace(_line.at(cfg_index)))
+					cfg_index++;
+				if (ws_endl(_line, cfg_index)) 
+					return true;
+			}
 			break;
 	}
 	return (_error = "Unknown syntax in config defaults", false);
 }
 
-bool ConfigParser::checkServer() {
-	if (_line.substr(_pos, std::string::npos).find("server") == 0)
-		return true;
-	return false;
+bool ConfigParser::checkServer(size_t index) {
+	if (_line.find("server") == index && index + 7 < _line.size() && ws_wspace(_line.at(index + 6))) {
+		index += 6;
+		while (!ws_endl(_line, index) && ws_wspace(_line.at(index)))
+			index++;
+		if (ws_endl(_line, index) || _line.at(index) != '{')
+			return (_error = "Invalid syntax at server section begin at ' '", _error[44] = _line.at(index),  false);		
+		while (index++ && !ws_endl(_line, index) && ws_wspace(_line.at(index)))
+			;		
+		if (ws_endl(_line, index))
+			return true;
+	}
+	return (_error = "Extra non-whitespace characters present in server section start", false);
 }
 
 // skips white space characters and jumps to end on comment character(#) on stored _line
