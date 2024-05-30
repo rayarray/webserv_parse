@@ -1,6 +1,7 @@
 # INTERNAL FILE, DO NOT MODIFY
 http S
 server S
+test N T
 HTTP
 max_client_body_size N
 SERVER
