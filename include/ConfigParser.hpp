@@ -23,9 +23,9 @@ class ConfigParser {
 
 	private:
 		bool getConfigSets();
-		const std::string& getConfig(size_t index);
-		const size_t getConfigArgNum(size_t index);
-		const char& getConfigArg(size_t index);
+		//const std::string& getConfig(size_t index);
+		//const size_t getConfigArgNum(size_t index);
+		//const char& getConfigArg(size_t index);
 		bool handleConfig();
 		bool handleConfig(size_t index);
 		bool handleSubConfig(size_t index);

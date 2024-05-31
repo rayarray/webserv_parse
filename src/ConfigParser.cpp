@@ -68,9 +68,9 @@ bool ConfigParser::handleConfig() {
 	if (ws_checkword_lower(_line.substr(_pos, std::string::npos), _config_defaults, cfg_index)) {
 		std::cout << "handleConfig match, index: " << cfg_index << ", word: " << _config_defaults.at(cfg_index) << std::endl;
 		if (_config_defaults.at(cfg_index).back() == 'S' && !handleSubConfig(cfg_index))
-			return false;
-		else if (handleConfig(cfg_index))
-			return false;
+			return (_error = "Subsection parsing failed", false);
+		else if (!handleConfig(cfg_index))
+			return (_error = "Line parsing failed: " + _error, false);
 		_pos = _line.size();
 		return true;
 	}
@@ -79,7 +79,7 @@ bool ConfigParser::handleConfig() {
 
 bool ConfigParser::handleConfig(size_t index) {
 	if (!checkSyntax(index))
-		return false;
+		return (_error = "Syntax error: " + _error, false);
 	std::cout << "handleConfig(index): _line@_pos: " << _line.substr(_pos, std::string::npos) << std::endl;
 	return true;
 }
@@ -89,38 +89,54 @@ bool ConfigParser::handleSubConfig(size_t index) { (void)index;
 	return true;
 }
 
-// * checks format of syntax after keyword
-// ! todo: add getConfig* funcs and rewrite this
-bool ConfigParser::checkSyntax(const size_t index) {
+// // * checks format of syntax after keyword
+// // ! todo: add getConfig* funcs and rewrite this
+// bool ConfigParser::checkSyntax(const size_t index) {
+// 	size_t store_pos = _pos;
+// 	size_t wordsize = ws_getword(_config_defaults.at(index)).size();
+// 	if (wordsize == 0 || wordsize == std::string::npos)
+// 		return (_error = "Unexpected syntax in config defaults!", false);
+// 	size_t def_pos = wordsize;
+// 	size_t cfg_pos = wordsize + _pos;
+// 	while (def_pos + 1 < _config_defaults.at(index).size()) { //&& cfg_pos + 1 < ws_size(_line)) {
+// 		if (!ws_wspace(_line.at(cfg_pos)))
+// 			return (_error = "Whitespace not found in expected position at keyword [" + _config_defaults.at(index).substr(0, wordsize) + "]", false);
+// 		else if (!ws_wspace(_config_defaults.at(index).at(def_pos)))
+// 			return (_error = "Expected whitespace not found in config defaults!", false);
+// 		while (ws_wspace(_line.at(cfg_pos)))
+// 			cfg_pos++;
+// 		if (!checkSyntaxType(index, def_pos++, cfg_pos))
+// 			return (_error = "Syntax error in config", false);
+// 		while (def_pos + 1 < _config_defaults.at(index).size() && _config_defaults.at(index).at(def_pos - 1) == _config_defaults.at(index).at(def_pos)) {
+// 			std::cout << "checkSyntax: repeated type" << std::endl;
+// 			if (!checkSyntaxType(index, def_pos, cfg_pos))
+// 				return (_error = "Syntax error in config", false);
+// 			while (ws_wspace(_line.at(cfg_pos)))
+// 				cfg_pos++;
+// 			if (cfg_pos >= ws_size(_line))
+// 				break;
+// 		}
+// 	}
+// 	return (_pos = store_pos, true);
+//}
+
+bool ConfigParser::checkSyntax(const size_t index) { std::cout << "checkSyntax called" << std::endl;
 	size_t store_pos = _pos;
 	size_t wordsize = ws_getword(_config_defaults.at(index)).size();
 	if (wordsize == 0 || wordsize == std::string::npos)
 		return (_error = "Unexpected syntax in config defaults!", false);
 	size_t def_pos = wordsize;
 	size_t cfg_pos = wordsize + _pos;
-	while (def_pos + 1 < _config_defaults.at(index).size()) { //&& cfg_pos + 1 < ws_size(_line)) {
-		if (!ws_wspace(_line.at(cfg_pos)))
-			return (_error = "Whitespace not found in expected position at keyword [" + _config_defaults.at(index).substr(0, wordsize) + "]", false);
-		else if (!ws_wspace(_config_defaults.at(index).at(def_pos)))
-			return (_error = "Expected whitespace not found in config defaults!", false);
-		while (ws_wspace(_line.at(cfg_pos)))
+	while (def_pos + 1 < _config_defaults.at(index).size() && _config_defaults.at(index).at(def_pos) == ' ' && !ws_endl(_line, cfg_pos)) {
+		while (!ws_endl(_line, cfg_pos) && ws_wspace(_line.at(cfg_pos)))
 			cfg_pos++;
-		if (!checkSyntaxType(index, def_pos++, cfg_pos))
-			return (_error = "Syntax error in config", false);
-		while (def_pos + 1 < _config_defaults.at(index).size() && _config_defaults.at(index).at(def_pos - 1) == _config_defaults.at(index).at(def_pos)) {
-			std::cout << "checkSyntax: repeated type" << std::endl;
-			if (!checkSyntaxType(index, def_pos, cfg_pos))
-				return (_error = "Syntax error in config", false);
-			while (ws_wspace(_line.at(cfg_pos)))
-				cfg_pos++;
-			if (cfg_pos >= ws_size(_line))
-				break;
-		}
+		if (!checkSyntaxType(index, ++def_pos, cfg_pos))
+			return (_error = "Invalid syntax type: " + _error, false);
 	}
-	return (_pos = store_pos, true);
+	return (_pos = store_pos, true); // replace, check if success
 }
 
-bool ConfigParser::checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index) { std::cout << "checkSyntaxType called, type: " << _config_defaults.at(index).at(index_pos + 1) << std::endl;
+bool ConfigParser::checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index) { std::cout << "checkSyntaxType called, type: " << _config_defaults.at(index).at(index_pos) << std::endl;
 	const size_t cfg_start = cfg_index;
 	bool quotes = false;
 	switch (_config_defaults.at(index).at(index_pos)) {
