@@ -125,14 +125,22 @@ bool ConfigParser::checkSyntax(const size_t index) { std::cout << "checkSyntax c
 	size_t wordsize = ws_getword(_config_defaults.at(index)).size();
 	if (wordsize == 0 || wordsize == std::string::npos)
 		return (_error = "Unexpected syntax in config defaults!", false);
-	size_t def_pos = wordsize;
+	//size_t def_pos = wordsize;
 	size_t cfg_pos = wordsize + _pos;
-	while (def_pos + 1 < _config_defaults.at(index).size() && _config_defaults.at(index).at(def_pos) == ' ' && !ws_endl(_line, cfg_pos)) {
+	for (size_t i = 1; ws_getarg(i, _config_defaults.at(index)) != 0; i++) {
 		while (!ws_endl(_line, cfg_pos) && ws_wspace(_line.at(cfg_pos)))
 			cfg_pos++;
-		if (!checkSyntaxType(index, ++def_pos, cfg_pos))
-			return (_error = "Invalid syntax type: " + _error, false);
-	}
+		if (ws_endl(_line, cfg_pos))
+			return (false);
+
+	} // ! continue from this for loop
+
+	//while (ws_getarg()) {
+	//	while (!ws_endl(_line, cfg_pos) && ws_wspace(_line.at(cfg_pos)))
+	//		cfg_pos++;
+	//	if (!checkSyntaxType(index, ++def_pos, cfg_pos))
+	//		return (_error = "Invalid syntax type: " + _error, false);
+	//}
 	return (_pos = store_pos, true); // replace, check if success
 }
 

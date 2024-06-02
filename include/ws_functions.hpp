@@ -56,4 +56,49 @@ inline size_t ws_size(const std::string &s) {
 		end++;
 	return end;
 }
+
+// get num:th argument from config defaults line
+inline char ws_getarg(size_t num, std::string s) {
+	size_t pos = 0;
+	while (pos < s.size() && !ws_wspace(s.at(pos)))
+		pos++;
+	while (pos < s.size() && ws_wspace(s.at(pos)))
+		pos++;
+	while (num > 1) {
+		if (pos < s.size() && std::isupper(s.at(pos)) && ++pos) {
+			if (pos + 1 == s.size() && s.at(pos - 1) == s.at(pos) && s.at(pos) != 'S')
+				return s.at(pos);
+			else if (pos == s.size())
+				return 0;
+			else if (pos < s.size() && !ws_wspace(s.at(pos)))
+				throw std::runtime_error("Invalid config default syntax: ws_getarg");
+		}
+		pos++;
+		num--;
+	}
+	return s.at(pos);
+}
+
+// returns how many arguments a keyword takes, does not count repeats
+inline size_t ws_getarglen(std::string s) {
+	size_t pos = 0;
+	size_t len = 0;
+	while (pos < s.size() && !ws_wspace(s.at(pos)))
+		pos++;
+	while (pos < s.size() && ws_wspace(s.at(pos)))
+		pos++;
+	if (pos == s.size()) return 0;
+	while (++len && pos < s.size()) {
+		if (!std::isupper(s.at(pos)))
+			throw std::runtime_error("Invalid config default syntax:1 ws_getarglen");
+		pos++;
+		if (ws_endl(s, pos) || (s.at(pos - 1) == s.at(pos) && s.at(pos) != 'S' && ws_endl(s, pos + 1)))
+			return len;
+		else if (!ws_wspace(s.at(pos)))
+			throw std::runtime_error("Invalid config default syntax:2 ws_getarglen");
+		pos++;
+	}
+	throw std::runtime_error("Error at ws_getarglen");
+}
+
 #endif
