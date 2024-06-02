@@ -120,6 +120,7 @@ bool ConfigParser::handleSubConfig(size_t index) { (void)index;
 // 	return (_pos = store_pos, true);
 //}
 
+// checks syntax for _line against _config_defaults at index
 bool ConfigParser::checkSyntax(const size_t index) { std::cout << "checkSyntax called" << std::endl;
 	size_t store_pos = _pos;
 	size_t wordsize = ws_getword(_config_defaults.at(index)).size();
