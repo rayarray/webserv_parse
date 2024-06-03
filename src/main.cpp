@@ -23,12 +23,18 @@ int main(void) {
 	}
 	//std::cout << "ws_toupper test: " << ws_toupper("server") << std::endl;
 
-	// * testing ws_getarg()
-	std::string s("test N T C");
-	std::cout << "ws_getarglen \"" << s << "\": " << ws_getarglen(s) << std::endl;
-	std::cout << "ws_getarg 1 \"" << s << "\": " << ws_getarg(1, s) << std::endl;
-	std::cout << "ws_getarg 2 \"" << s << "\": " << ws_getarg(2, s) << std::endl;
-	std::cout << "ws_getarg 3 \"" << s << "\": " << ws_getarg(3, s) << std::endl;
-	std::cout << "ws_getarg 4 \"" << s << "\": " << ws_getarg(4, s) << std::endl;
-	std::cout << "ws_getarg 5 \"" << s << "\": " << ws_getarg(4, s) << std::endl;
+	// // * testing ws_getarg()
+	// std::string s("test N T C");
+	// std::cout << "ws_getarglen \"" << s << "\": " << ws_getarglen(s) << std::endl;
+	// std::cout << "ws_getarg 1 \"" << s << "\": " << ws_getarg(1, s) << std::endl;
+	// std::cout << "ws_getarg 2 \"" << s << "\": " << ws_getarg(2, s) << std::endl;
+	// std::cout << "ws_getarg 3 \"" << s << "\": " << ws_getarg(3, s) << std::endl;
+	// std::cout << "ws_getarg 4 \"" << s << "\": " << ws_getarg(4, s) << std::endl;
+	// std::cout << "ws_getarg 5 \"" << s << "\": " << ws_getarg(4, s) << std::endl;
+
+	// * testing ConfigSection and inheritance
+	localhost.addConfigLine(std::vector<std::string>{"listen", "one.example.com"});
+	localhost.addConfigLine({"location", "/"});
+	std::cout << localhost.getIndexArg(0, 0) << " " << localhost.getIndexArg(0, 1) << std::endl;
+	std::cout << localhost.getIndexArg(1, 0) << " " << localhost.getIndexArg(1, 1) << std::endl;
 }

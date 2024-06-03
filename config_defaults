@@ -2,6 +2,7 @@
 http S
 server S
 test N T
+nntest NN
 HTTP
 max_client_body_size N
 SERVER

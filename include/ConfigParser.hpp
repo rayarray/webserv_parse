@@ -6,6 +6,8 @@
 # include <vector>
 # include "Server.hpp"
 
+# define	GLOBAL "global" // config section name for top level
+
 // usage: create instance with config file path, 
 // start parsing with startParse() which returns true if valid conf
 // get servers with getServer(), returns false when last server reached
@@ -31,7 +33,7 @@ class ConfigParser {
 		bool handleSubConfig(size_t index);
 		bool checkSyntax(const size_t index);
 		bool checkSyntax(size_t index, bool repeat);
-		bool checkSyntaxType(const size_t index, const size_t index_pos, size_t &cfg_index);
+		bool checkSyntaxType(const char syntax_type, size_t &cfg_index);
 		bool checkServer(size_t index);
 		bool skipWhiteSpace();
 		bool skipWhiteSpaceLines();
@@ -40,8 +42,9 @@ class ConfigParser {
 		std::string _line;
 		size_t _pos;
 		size_t _server_index;
-
 		std::vector<std::string> _config_defaults;
+		std::string _section;
+		std::vector<ConfigSection> _config_sections;
 };
 
 #endif

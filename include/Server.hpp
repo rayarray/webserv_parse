@@ -4,6 +4,7 @@
 #include <cstring>
 #include <vector>
 #include <map>
+#include "ConfigSection.hpp"
 #include "Location.hpp"
 #include "Request.hpp"
 
@@ -13,7 +14,7 @@
 // client_max_body_size
 // location / { }
 
-class Server {
+class Server : public ConfigSection {
 	public:
 		Server(const std::string listen, const size_t port);
 

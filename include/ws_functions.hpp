@@ -101,4 +101,17 @@ inline size_t ws_getarglen(std::string s) {
 	throw std::runtime_error("Error at ws_getarglen");
 }
 
+inline bool ws_checkend(std::string s) {
+	size_t pos = 0;
+	while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
+		pos++;
+	if (!ws_endl(s, pos) && s.at(pos) == '}')
+		pos++;
+	else
+		return false;
+	while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
+		pos++;
+	return ws_endl(s, pos);
+}
+
 #endif
