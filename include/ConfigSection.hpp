@@ -18,6 +18,8 @@ class ConfigSection {
 		std::string const getIndexArg(size_t index, size_t num);
 		std::string const getIndexArg(std::string keyword, size_t num);
 
+		void printAll();
+
 		const std::string _section_name;
 	private:
 		std::vector<std::vector<std::string> > _config_lines;

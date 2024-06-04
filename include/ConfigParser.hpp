@@ -21,6 +21,8 @@ class ConfigParser {
 		bool getServer(Server &server);
 		bool endParse();
 
+		void printCS();
+
 		std::string _error;
 
 	private:

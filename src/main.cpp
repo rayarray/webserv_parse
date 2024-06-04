@@ -11,6 +11,7 @@ int main(void) {
 	if (!start_parse)
 		std::cout << "MAIN: conf._error: " << conf._error << std::endl;
 	//std::cout << "MAIN: _line: [" << conf._error << "]" << std::endl;
+	conf.printCS();
 
 	// example request resolve from server
 	Server localhost("localhost", 80);
@@ -32,9 +33,21 @@ int main(void) {
 	// std::cout << "ws_getarg 4 \"" << s << "\": " << ws_getarg(4, s) << std::endl;
 	// std::cout << "ws_getarg 5 \"" << s << "\": " << ws_getarg(4, s) << std::endl;
 
-	// * testing ConfigSection and inheritance
-	localhost.addConfigLine(std::vector<std::string>{"listen", "one.example.com"});
-	localhost.addConfigLine({"location", "/"});
-	std::cout << localhost.getIndexArg(0, 0) << " " << localhost.getIndexArg(0, 1) << std::endl;
-	std::cout << localhost.getIndexArg(1, 0) << " " << localhost.getIndexArg(1, 1) << std::endl;
+	// // * testing ConfigSection and inheritance
+	// localhost.addConfigLine(std::vector<std::string>{"listen", "one.example.com"});
+	// localhost.addConfigLine({"location", "/"});
+	// std::cout << localhost.getIndexArg(0, 0) << " " << localhost.getIndexArg(0, 1) << std::endl;
+	// std::cout << localhost.getIndexArg(1, 0) << " " << localhost.getIndexArg(1, 1) << std::endl;
+
+	// // * testing ws_getargstr
+	// std::string ss("test foo bar 543543 z\"bc\"fsfs\"\" #fabadoo");
+	// std::cout << "ws_getargstr: " << ss << " 1: " << ws_getargstr(1, ss) << std::endl;
+	// std::cout << "ws_getargstr: " << ss << " 2: " << ws_getargstr(2, ss) << std::endl;
+	// std::cout << "ws_getargstr: " << ss << " 3: " << ws_getargstr(3, ss) << std::endl;
+	// std::cout << "ws_getargstr: " << ss << " 4: " << ws_getargstr(4, ss) << std::endl;
+
+	// std::vector<std::string> list = {"foo", "bar", "FOOBAR", "baz"};
+	// size_t i = 0;
+	// ws_checkword_lower("baz", list, i, 2);
+	// std::cout << "ws_checkword_lower(\"baz\", foo|bar|FOOBAR|baz, i, 2) = " << i << std::endl;
 }

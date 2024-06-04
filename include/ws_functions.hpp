@@ -28,11 +28,21 @@ inline bool ws_checkword(const std::string &s, const std::vector<std::string> &l
 inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index) {
 	//std::cout << "ws_cw_l: " << s << std::endl;
 	for (index = 0; index < list.size() && !std::isupper(list.at(index).at(0)); index++) {
-		//std::cout << "ws_cw_l iterating elem: " << ws_getword(list.at(index)) << " find result: " << s.find(ws_getword(list.at(index))) << std::endl;
+	//	std::cout << "ws_cw_l iterating elem: " << ws_getword(list.at(index)) << " find result: " << s.find(ws_getword(list.at(index))) << std::endl;
 		if (s.find(ws_getword(list.at(index))) == 0)
 			return true;
 	}
 	//return (std::cout << "ws_cw_l returning false" << std::endl, false);
+	return false;
+}
+
+inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index, size_t start) {
+	if (!(start + 1 < list.size()))
+		return false;
+	std::vector<std::string> sub_list(list.begin() + 1 + start, list.end());
+	//std::cout << "ws_cw_l sublist begin: " << sub_list.at(0) << std::endl;
+	if (ws_checkword_lower(s, sub_list, index))
+		return (index += start, true);
 	return false;
 }
 
@@ -77,6 +87,34 @@ inline char ws_getarg(size_t num, std::string s) {
 		num--;
 	}
 	return s.at(pos);
+}
+
+// gets nth arg from config line, assumes syntax checked
+inline std::string ws_getargstr(size_t num, std::string s) {
+	if (num == 0) return "";
+	size_t pos = 0;
+	std::string arg;
+	bool quotes = false;
+	while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
+		pos++;
+	while (!ws_endl(s, pos) && !ws_wspace(s.at(pos)))
+		pos++;
+	while (num-- > 0) {
+		while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
+			pos++;
+		while ((!ws_endl(s, pos) || (quotes && pos < s.size())) &&
+			(!ws_wspace(s.at(pos)) || quotes) && std::isprint(s.at(pos))) {
+				if (s.at(pos) == '"')
+					quotes = (!quotes) ? true : false;
+				else
+					arg.push_back(s.at(pos));
+				pos++;
+			}
+		if (num == 0) return arg;
+		else arg = "";
+	}
+	std::cout << std::endl << "ws_getargstr end, pos: " << pos << std::endl;
+	return "";
 }
 
 // returns how many arguments a keyword takes, does not count repeats

@@ -1,4 +1,5 @@
 #include "ConfigSection.hpp"
+#include <iostream> // ! for debug
 
 void ConfigSection::addConfigLine(const std::vector<std::string> line) {
 	_config_lines.push_back(line);
@@ -31,4 +32,13 @@ std::string const ConfigSection::getIndexArg(std::string keyword, size_t num) {
 	if (doesLineExist(keyword, index))
 		return (getIndexArg(index, num));
 	return "";
+}
+
+void ConfigSection::printAll() {
+	std::cout << "[" << _section_name << "]";
+	for (size_t i = 0; i < _config_lines.size(); i++) {
+		for (size_t j = 1; j < _config_lines.at(i).size(); j++)
+			std::cout << _config_lines.at(i).at(j) << ":";
+	}
+	std::cout << "END" << std::endl;
 }

@@ -1,5 +1,5 @@
 # INTERNAL FILE, DO NOT MODIFY
-http S
+http N S
 server S
 test N T
 nntest NN
