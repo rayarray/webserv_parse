@@ -6,11 +6,13 @@
 
 inline bool ws_wspace(char c) { return (c == ' ' || c == '\t'); }
 
+inline bool ws_keyword_char(char c) { return (std::isalpha(c) || c == '_' || c == '-' ); }
+
 inline const std::string ws_getword(const std::string &s) {
 	size_t end = 0;
-	if (s.empty() || !std::isalpha(s.at(0)))
+	if (s.empty() || !ws_keyword_char(s.at(0)))
 		return "";
-	while (end < s.size() && std::isalpha(s.at(end)) && !ws_wspace(s.at(end)))
+	while (end < s.size() && ws_keyword_char(s.at(end)) && !ws_wspace(s.at(end)))
 		end++;
 	return s.substr(0, end);
 }
@@ -28,19 +30,19 @@ inline bool ws_checkword(const std::string &s, const std::vector<std::string> &l
 inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index) {
 	//std::cout << "ws_cw_l: " << s << std::endl;
 	for (index = 0; index < list.size() && !std::isupper(list.at(index).at(0)); index++) {
-	//	std::cout << "ws_cw_l iterating elem: " << ws_getword(list.at(index)) << " find result: " << s.find(ws_getword(list.at(index))) << std::endl;
+		std::cout << "ws_cw_l iterating elem: " << ws_getword(list.at(index)) << " find result: " << s.find(ws_getword(list.at(index))) << std::endl;
 		if (s.find(ws_getword(list.at(index))) == 0)
 			return true;
 	}
-	//return (std::cout << "ws_cw_l returning false" << std::endl, false);
+	return (std::cout << "ws_cw_l returning false" << std::endl, false);
 	return false;
 }
 
 inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index, size_t start) {
 	if (!(start + 1 < list.size()))
 		return false;
-	std::vector<std::string> sub_list(list.begin() + 1 + start, list.end());
-	//std::cout << "ws_cw_l sublist begin: " << sub_list.at(0) << std::endl;
+	std::vector<std::string> sub_list(list.begin() + 1 + start, list.end()); // ! removed + 1
+	std::cout << "ws_cw_l sublist begin: " << sub_list.at(0) << std::endl;
 	if (ws_checkword_lower(s, sub_list, index))
 		return (index += start, true);
 	return false;
@@ -50,6 +52,12 @@ inline std::string ws_toupper(const std::string &s) {
 	std::string s_up(s);
 	std::transform(s_up.begin(), s_up.end(), s_up.begin(), ::toupper);
 	return s_up;
+}
+
+inline std::string ws_tolower(const std::string &s) {
+	std::string s_lo(s);
+	std::transform(s_lo.begin(), s_lo.end(), s_lo.begin(), ::tolower);
+	return s_lo;
 }
 
 //checks if endline reached (# counts as endline)

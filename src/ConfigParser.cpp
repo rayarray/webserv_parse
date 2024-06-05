@@ -57,12 +57,14 @@ bool ConfigParser::handleConfig() {
 	size_t cfg_index;
 	size_t section_index = 0;
 	std::cout << "hC _line.substr(_pos, -1): " << _line.substr(_pos, std::string::npos) << std::endl;
-	if (_section != GLOBAL)
-		ws_checkword(ws_toupper(_section), _config_defaults, section_index);
+	if (_section != GLOBAL && !ws_checkword(ws_toupper(_section), _config_defaults, section_index) && ++section_index)
+		return (_error = "Subsection keywords not found in config defaults", false);
 	std::cout << "hC: _section: " << _section << " section_index: " << section_index << std::endl;
-	std::cout << "handleConfig: _line: " << _line.substr(_pos, std::string::npos) << std::endl;
+	std::cout << "hC: _line: " << _line.substr(_pos, std::string::npos) << std::endl;
+	if (_section != GLOBAL) 
+		std::cout << "hC: ws_checkword_lower: " << std::boolalpha << ws_checkword_lower(_line.substr(_pos, std::string::npos), _config_defaults, cfg_index, section_index) << std::endl;
 	if ((_section == GLOBAL && ws_checkword_lower(_line.substr(_pos, std::string::npos), _config_defaults, cfg_index)) || (
-		_section != GLOBAL && ws_checkword_lower(_line.substr(_pos, std::string::npos), _config_defaults, cfg_index, section_index + 1))) {
+		_section != GLOBAL && ws_checkword_lower(_line.substr(_pos, std::string::npos), _config_defaults, cfg_index, section_index))) {
 		std::cout << "handleConfig match, index: " << cfg_index << ", word: " << _config_defaults.at(cfg_index) << std::endl;
 		if (_config_defaults.at(cfg_index).back() == 'S') {
 			if (!handleSubConfig(cfg_index))
@@ -77,12 +79,20 @@ bool ConfigParser::handleConfig() {
 }
 
 bool ConfigParser::handleConfig(size_t index) {
+	if (_section != GLOBAL) 
+		index++;
 	if (!checkSyntax(index))
-		return (_error = "Syntax error: " + _error, false);
+		return (std::cout << "hC failed at checkSyntax" << std::endl, _error = "Syntax error: " + _error, false);
 	std::cout << "handleConfig(index): _line@_pos: " << _line.substr(_pos, std::string::npos) << std::endl;
-
+	for (ConfigSection &section : _config_sections) {
+		if (section._section_name == _section) {
+			std::vector<std::string> values;
+			for (size_t i = 1; i <= ws_getarglen(_config_defaults.at(index)); i++)
+				values.push_back(ws_getargstr(i, _line));
+			section.addConfigLine(values);
+	}	}
 	_pos = _line.size();
-	return true;
+	return (std::cout << "hC returning true" << std::endl, true);
 }
 
 bool ConfigParser::handleSubConfig(size_t index) { std::cout << "handleSubConfig called" << std::endl;
@@ -104,18 +114,26 @@ bool ConfigParser::handleSubConfig(size_t index) { std::cout << "handleSubConfig
 		section->addConfigLine(initvalues);
 	}
 	_section = ws_getword(_config_defaults.at(index));
-	if (_pos = 0, !std::getline(_cfile, _line))
-		return (_error = "Unexpected end of file at section " + _section + " start", false);
+	//if (_pos = 0, !std::getline(_cfile, _line))
+	//	return (_error = "Unexpected end of file at section " + _section + " start", false);
 	std::cout << "hSC _line at start of handling lines for section : " << _line << " pos: " << _pos << std::endl;
 	//if (!skipWhiteSpaceLines()) std::cout << "hSC !skipWhiteSpaceLines() = true" << std::endl;
 	//if (handleConfig()) std::cout << "hSC handleConfig() = true" << std::endl;
 	//else std::cout << "hSC handleConfig failed, _error: " << _error << std::endl;
-	while (!skipWhiteSpaceLines())
-		if (!handleConfig() && !ws_checkend(_line)) 
-			return (std::cout << "hSC _line: " << _line << " _error: " << _error << std::endl, _error = "Section " + _section + " end missing", false);
-	//while (!skipWhiteSpaceLines() && handleConfig())
-	//	std::cout << "hSC _line handled: " << _line << std::endl;
-	if (!std::getline(_cfile, _line) || !ws_checkend(_line)) {
+	// ~ while (!skipWhiteSpaceLines())
+	// ~	if (!handleConfig() && !ws_checkend(_line))
+	// ~		return (std::cout << "hSC _line: " << _line << " _error: " << _error << std::endl, _error = "Section " + _section + " end missing", false);
+	// *while (handleConfig() || !skipWhiteSpaceLines())
+	// *		if (!ws_checkend(_line)) // ! CONTINUE FROM HERE
+	// *			return (std::cout << "hSC ws_checkend failed, _line: " << _line << " _error: " << _error << std::endl, _error = "Section " + _section + " end missing", false);
+	_pos = _line.size();
+
+	while (skipWhiteSpaceLines() || handleConfig() || !ws_checkend(_line))
+		;
+	//	return (std::cout << "hSC loop failed at _line: " << _line << std::endl, false);
+	//^while (!skipWhiteSpaceLines() && handleConfig())
+	//^	std::cout << "hSC _line handled: " << _line << std::endl;
+	if (!ws_checkend(_line)) { // ^ std::getline(_cfile, _line) || 
 		std::cout << "hSC _line at end: " << _line << std::endl;
 		return (_error = "Section end for section " + _section + " is missing!", false);
 	}
@@ -126,7 +144,7 @@ bool ConfigParser::handleSubConfig(size_t index) { std::cout << "handleSubConfig
 // ~ called by handleConfig, does not modify _pos
 // checks syntax for _line against _config_defaults at index
 // * seems to work, did some prelim testing
-bool ConfigParser::checkSyntax(const size_t index) { std::cout << "checkSyntax called, line at index: " << _config_defaults.at(index) << std::endl;
+bool ConfigParser::checkSyntax(const size_t index) { std::cout << "checkSyntax called, index:  " << index << "line at index: " << _config_defaults.at(index) << " _line: " << _line << std::endl;
 	size_t wordsize = ws_getword(_config_defaults.at(index)).size();
 	if (wordsize == 0 || wordsize == std::string::npos)
 		return (_error = "Unexpected syntax in config defaults!", false);
@@ -216,7 +234,7 @@ bool ConfigParser::skipWhiteSpace() {
 }
 
 // skips whitespaces and comments on line or multiple lines
-// returns true if reached end of config file
+// returns true if reached end of config file, false if reached parseable content
 bool ConfigParser::skipWhiteSpaceLines() {
 	while (skipWhiteSpace()) {
 		_pos = 0;

@@ -4,6 +4,7 @@
 # include <string>
 # include <fstream>
 # include <vector>
+# include "ConfigReference.hpp"
 # include "Server.hpp"
 
 # define	GLOBAL "global" // config section name for top level
