@@ -67,6 +67,14 @@ inline bool ws_endl(const std::string &s, const size_t pos) {
 	return false;
 }
 
+// gets next non-whitespace character starting from pos, modifies pos
+// returns true if found, false if reached end of line
+inline bool ws_get_next_nonws(const std::string &s, size_t &pos) {
+	while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
+		pos++;
+	return !ws_endl(s, pos);
+}
+
 // return size of string, excluding comments (comments start with #)
 inline size_t ws_size(const std::string &s) {
 	size_t end = 0;

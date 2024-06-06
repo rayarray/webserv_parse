@@ -11,11 +11,56 @@ ConfigReference::ConfigReference(const std::string &reference_file) : _section(G
 		if (!processLine(line))
 			throw std::runtime_error("Invalid line in configuration reference file!");
 	file.close();
-	//if (!keyExists("server") || !keyExists("server", "server")) 
-	//	throw std::runtime_error("Configuration reference file is missing server keyword or section!");
+	if (!keyExists(GLOBAL, "server") || !keyExists("server", "listen")) 
+		throw std::runtime_error("Configuration reference file is missing server keyword or section!");
 }
 
 ConfigReference::~ConfigReference() {}
+
+bool ConfigReference::keyExists(const std::string section, const std::string keyword) {
+	for (std::vector<std::string> ref_line : _references) {
+		if (ref_line.size() >= 2 && ref_line.at(0) == section && ref_line.at(1) == keyword)
+			return true;
+	}
+	return false;
+}
+
+bool ConfigReference::keyExists(const std::string section, const std::string keyword, size_t &index) {
+	for (size_t i = 0; i < _references.size(); i++) {
+		if (_references.at(i).size() >= 2 && _references.at(i).at(0) == section && _references.at(i).at(1) == keyword)
+			return (index = i, true);
+	}
+	return false;
+}
+
+// size_t ConfigReference::keyNumParam(const std::string section, const std::string keyword) {
+// 	size_t index = std::string::npos;
+// 	return (keyExists(section, keyword, index), index);
+// } // ^ not needed?
+
+// gets parameter number x, first is 0
+char ConfigReference::keyParamType(const std::string section, const std::string keyword, const size_t param_num) {
+	size_t pnum = param_num + 2;
+	size_t idx;
+	if (!keyExists(section, keyword, idx))
+		throw std::runtime_error("ConfigReference::keyParamType called with unmatched keyword!");
+	if (pnum >= _references.at(idx).size()) {
+		if (_references.at(idx).size() > 2 && _references.at(idx).back().size() == 2)
+			return _references.at(idx).back().at(0);
+		else
+			return 0;
+	}
+	return (_references.at(idx).at(pnum).at(0));
+}
+
+bool ConfigReference::keyParamTypeMatch(const std::string section, const std::string keyword, const size_t param_num, const char type) {
+	const char ptype = keyParamType(section, keyword, param_num);
+	if (!validType(ptype) || !validType(type))
+		throw std::runtime_error("Invalid configuration parameter type encountered!");
+	if (type == ptype)
+		return true;
+	return false;
+}
 
 bool ConfigReference::processLine(const std::string &line) {
 	size_t pos = 0;
@@ -59,7 +104,7 @@ bool ConfigReference::processLine(const std::string &line) {
 }
 
 inline bool ConfigReference::validType(const char type) {
-	return (type == 'S' || type == 'C' || type == 'N' || type == 'T');
+	return (type == 'S' || type == 'N' || type == 'T');
 }
 
 void ConfigReference::print() {

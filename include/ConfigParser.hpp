@@ -5,6 +5,7 @@
 # include <fstream>
 # include <vector>
 # include "ConfigReference.hpp"
+# include "ConfigFile.hpp"
 # include "Server.hpp"
 
 # define	GLOBAL "global" // config section name for top level

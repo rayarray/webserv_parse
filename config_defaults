@@ -3,13 +3,14 @@ http N S
 server S
 test N T
 nntest NN
+ntttest N TT
 HTTP
 max_client_body_size N
 SERVER
 listen T
 server_name TT
 location T S
-location C T S
+location T S
 error_page N T
 LOCATION
 root T

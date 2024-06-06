@@ -13,17 +13,19 @@ class ConfigReference {
 		ConfigReference(const std::string &reference_file);
 		~ConfigReference();
 	
-		bool keyExists(const std::string keyword);
+		//bool keyExists(const std::string keyword); // * not needed
 		bool keyExists(const std::string section, const std::string keyword);
-		size_t keyNumParam(const std::string keyword);
-		char keyParamType(const std::string keyword, const size_t param_num);
-		bool keyParamTypeMatch(const std::string keyword, const size_t param_num, const char type);
+		bool keyExists(const std::string section, const std::string keyword, size_t &index);
+		//size_t keyNumParam(const std::string section, const std::string keyword);
+		char keyParamType(const std::string section, const std::string keyword, const size_t param_num);
+		bool keyParamTypeMatch(const std::string section, const std::string keyword, const size_t param_num, const char type);
 
 		void print(); // ! debug
 
 	private:
-		bool validType(const char type);
 		bool processLine(const std::string &line);
+		bool validType(const char type);
+		
 		std::vector<std::vector<std::string> > _references;
 		std::string _section;
 };
