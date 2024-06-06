@@ -28,7 +28,6 @@ class ConfigParser {
 		std::string _error;
 
 	private:
-		bool getConfigSets();
 		//const std::string& getConfig(size_t index);
 		//const size_t getConfigArgNum(size_t index);
 		//const char& getConfigArg(size_t index);
@@ -42,13 +41,10 @@ class ConfigParser {
 		bool skipWhiteSpace();
 		bool skipWhiteSpaceLines();
 
-		std::ifstream _cfile;
-		std::string _line;
-		size_t _pos;
 		size_t _server_index;
-		std::vector<std::string> _config_defaults;
-		std::string _section;
 		std::vector<ConfigSection> _config_sections;
+		ConfigReference _ref;
+		ConfigFile _cfg;
 };
 
 #endif

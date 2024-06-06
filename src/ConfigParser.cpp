@@ -2,28 +2,11 @@
 #include "ws_functions.hpp"
 #include "ConfigParser.hpp"
 
-ConfigParser::ConfigParser(const std::string &filepath) : _cfile(filepath), _pos(0), _server_index(0), _section (GLOBAL) {
+ConfigParser::ConfigParser(const std::string &filepath) : _server_index(0), _ref(filepath) ,_cfg("config_defaults") {
 	_config_sections.push_back(ConfigSection(GLOBAL));
 }
 
-ConfigParser::~ConfigParser() {
-	if (_cfile) _cfile.close();
-}
-
-bool ConfigParser::getConfigSets() {
-	std::ifstream config_file(CONFIG_DEFAULTS);
-	if (!config_file) return (_error = "Error opening config values file", false);
-	if (!std::getline(config_file, _line) || _line != "# INTERNAL FILE, DO NOT MODIFY") 
-		return (_error = "Invalid config defaults file", false);
-	while (std::getline(config_file, _line))
-		_config_defaults.push_back(_line);
-	//for (const std::string& line : _config_defaults) { // * print _config_defaults
-	//	std::cout << line << std::endl;
-	//}
-	if (!ws_checkword("SERVER", _config_defaults, _server_index))
-		return (_error = "Invalid config defaults file", false);
-	return true;
-}
+ConfigParser::~ConfigParser() {}
 
 bool ConfigParser::startParse() {
 	if (!_cfile) return (_error = "Error opening config file", false);
@@ -47,7 +30,6 @@ bool ConfigParser::getServer(Server &server) { (void)server;
 }
 
 bool ConfigParser::endParse() {
-	if (_cfile) _cfile.close();
 	return true;
 }
 
