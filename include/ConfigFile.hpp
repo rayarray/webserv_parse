@@ -5,7 +5,7 @@
 # include <fstream>
 # include <vector>
 # include <iostream> // ! debug
-# include "ConfigParser.hpp" // for GLOBAL definition
+# include "ConfigReference.hpp" // for GLOBAL definition
 # include "ws_functions.hpp" // ? might be unnecessary
 
 class ConfigFile {
@@ -21,6 +21,8 @@ class ConfigFile {
 		
 		const std::string &getSection();
 		const std::string &getWord(const size_t &num);
+		const std::string &getLastWord();
+		std::vector<std::string> getVector();
 		
 		void print(); // ! debug
 

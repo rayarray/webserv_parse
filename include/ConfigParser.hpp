@@ -4,11 +4,9 @@
 # include <string>
 # include <fstream>
 # include <vector>
-# include "ConfigReference.hpp"
+# include "ConfigReference.hpp" // GLOBAL defined here
 # include "ConfigFile.hpp"
 # include "Server.hpp"
-
-# define	GLOBAL "global" // config section name for top level
 
 // usage: create instance with config file path, 
 // start parsing with startParse() which returns true if valid conf
@@ -20,26 +18,16 @@ class ConfigParser {
 		~ConfigParser();
 
 		bool startParse();
-		bool getServer(Server &server);
+		Server getServer();
 		bool endParse();
 
 		void printCS();
 
-		std::string _error;
+		//std::string _error;
 
 	private:
-		//const std::string& getConfig(size_t index);
-		//const size_t getConfigArgNum(size_t index);
-		//const char& getConfigArg(size_t index);
-		bool handleConfig();
-		bool handleConfig(size_t index);
-		bool handleSubConfig(size_t index);
-		bool checkSyntax(const size_t index);
-		bool checkSyntax(size_t index, bool repeat);
-		bool checkSyntaxType(const char syntax_type, size_t &cfg_index);
-		bool checkServer(size_t index);
-		bool skipWhiteSpace();
-		bool skipWhiteSpaceLines();
+		bool storeConfigLine();
+		bool handleSubConfig();
 
 		size_t _server_index;
 		std::vector<ConfigSection> _config_sections;

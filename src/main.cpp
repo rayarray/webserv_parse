@@ -5,23 +5,29 @@
 // main for testing configparser, reads default.conf in current directory
 
 int main(void) {
-	ConfigReference ref("config_defaults");
-	ref.print();
-	std::string s = "global", k = "test"; size_t i = 0;
-	std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
-	std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
-	std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
-	std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
-	std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl;
+	ConfigParser conf("server.conf");
+	bool start_parse = conf.startParse();
+	std::cout << std::boolalpha << "ConfigParser.startParse() = " << start_parse << std::endl;
+	Server serv = conf.getServer();
+	conf.printCS();
+	// / // * configreference and configfile testing
+	// ConfigReference ref("config_defaults");
+	// ref.print();
+	// std::string s = "global", k = "test"; size_t i = 0;
+	// std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
+	// std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
+	// std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
+	// std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl; i++;
+	// std::cout << "keyParamType " << s << ":" << k << ":" << i << " = " << ref.keyParamType(s, k, i) << std::endl;
 
-	ConfigFile cfg("server.conf");
-	while (cfg.nextLine()) {
-		cfg.processLine();
-		std::cout << "{" << cfg.getSection() << "}";
-		for (size_t i = 0; !cfg.getWord(i).empty(); i++)
-			std::cout << "[" << cfg.getWord(i) << "]";
-		std::cout << std::endl;
-	}
+	// ConfigFile cfg("server.conf");
+	// while (cfg.nextLine()) {
+	// 	cfg.processLine();
+	// 	std::cout << "{" << cfg.getSection() << "}";
+	// 	for (size_t i = 0; !cfg.getWord(i).empty(); i++)
+	// 		std::cout << "[" << cfg.getWord(i) << "]";
+	// 	std::cout << std::endl;
+	// }
 	
 
 	// * old main

@@ -5,18 +5,18 @@
 # include <fstream>
 # include <vector>
 # include <iostream> // ! debug
-# include "ConfigParser.hpp" // for GLOBAL definition
+//# include "ConfigParser.hpp" // for GLOBAL definition
 # include "ws_functions.hpp" // ? might be unnecessary
+
+# define	GLOBAL "global" // config section name for top level
 
 class ConfigReference {
 	public:
 		ConfigReference(const std::string &reference_file);
 		~ConfigReference();
 	
-		//bool keyExists(const std::string keyword); // * not needed
 		bool keyExists(const std::string section, const std::string keyword);
 		bool keyExists(const std::string section, const std::string keyword, size_t &index);
-		//size_t keyNumParam(const std::string section, const std::string keyword);
 		char keyParamType(const std::string section, const std::string keyword, const size_t param_num);
 		bool keyParamTypeMatch(const std::string section, const std::string keyword, const size_t param_num, const char type);
 

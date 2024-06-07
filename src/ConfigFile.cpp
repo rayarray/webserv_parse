@@ -69,9 +69,18 @@ bool ConfigFile::processLine() {
 const std::string &ConfigFile::getSection() { return _sections.back(); }
 
 const std::string &ConfigFile::getWord(const size_t &num) {
-	if (num < _words.size())
-		return _words.at(num);
-	return empty;
+	return ((num < _words.size() ? _words.at(num) : empty));
+	//if (num < _words.size())
+	//	return _words.at(num);
+	//return empty;
+}
+
+const std::string &ConfigFile::getLastWord() { return _words.back(); }
+
+std::vector<std::string> ConfigFile::getVector() { 
+	std::vector<std::string> vector = _words;
+	vector.insert(vector.begin(), getSection());
+	return vector; 
 }
 
 bool ConfigFile::processParam(size_t &pos) {

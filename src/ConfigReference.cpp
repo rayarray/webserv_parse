@@ -33,11 +33,6 @@ bool ConfigReference::keyExists(const std::string section, const std::string key
 	return false;
 }
 
-// size_t ConfigReference::keyNumParam(const std::string section, const std::string keyword) {
-// 	size_t index = std::string::npos;
-// 	return (keyExists(section, keyword, index), index);
-// } // ^ not needed?
-
 // gets parameter number x, first is 0
 char ConfigReference::keyParamType(const std::string section, const std::string keyword, const size_t param_num) {
 	size_t pnum = param_num + 2;
@@ -82,12 +77,7 @@ bool ConfigReference::processLine(const std::string &line) {
 		return true;
 	while (!ws_endl(line, pos) && ws_wspace(line.at(pos)) && !ws_endl(line, ++pos) && validType(line.at(pos))) {
 		processed_word.assign(1, line.at(pos));
-		//std::cout << "to_string: " << processed_word << std::endl;
 		processed_line.push_back(processed_word);
-		//std::cout << "pushed: " << line.at(pos) << ", rest of line: " << line.substr(pos, -1) << std::endl;
-		//std::cout << "ws_endl(line, pos + 1) = " << std::boolalpha << ws_endl(line, pos + 1) << std::endl;
-		//std::cout << "processed_word.at(0) = " << processed_word.at(0) << std::endl;
-		//std::cout << "ws_endl(line, pos + 2) = " << std::boolalpha << ws_endl(line, pos + 2) << std::endl;
 		if (!ws_endl(line, pos + 1) && line.at(pos + 1) == processed_word.at(0) && ws_endl(line, pos + 2) && ++pos && ++pos) {
 			processed_line.back().push_back(processed_word.at(0));
 			break;
@@ -96,10 +86,6 @@ bool ConfigReference::processLine(const std::string &line) {
 	}
 	if (!ws_endl(line, pos))
 		throw std::runtime_error("Invalid syntax in configuration reference file!");
-	// std::cout << "processed_line: [";
-	// for (std::string &i : processed_line)
-	// 	std::cout << i << ":";
-	// std::cout << std::endl;
 	return (_references.push_back(processed_line), true);
 }
 
