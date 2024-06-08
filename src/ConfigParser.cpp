@@ -11,11 +11,10 @@ ConfigParser::~ConfigParser() {}
 bool ConfigParser::startParse() {
 	while (_cfg.nextLine()) {
 		_cfg.processLine();
-		storeConfigLine();
-		_cfg.print();
 		if (_cfg.getSection() == "server")
 			break;
-		
+		storeConfigLine();
+		_cfg.print();
 	}
 	if (_cfg.getSection() != "server")
 		throw std::runtime_error("Configuration file is missing a server section!");
@@ -23,6 +22,7 @@ bool ConfigParser::startParse() {
 }
 
 Server ConfigParser::getServer() {
+	std::cout << "getServer called: " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
 	if (_cfg.getSection() != "server" || _cfg.getLastWord() != "{")
 		throw std::runtime_error("Internal error: ConfigParser::getServer executed on non-server begin line");
 	if (!_cfg.nextLine() || !_cfg.processLine() || _cfg.getSection() != "server" || _cfg.getWord(0) != "listen")
@@ -36,13 +36,33 @@ Server ConfigParser::getServer() {
 			throw std::runtime_error(error); 
 		}
 	}
-	//std::cout << "creating server with " << _cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")) << " with port " << port << std::endl;
+	std::cout << "creating server with " << _cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")) << " with port " << port << std::endl;
 	Server srv(_cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")), port);
+	while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() != GLOBAL) {
+		std::cout << "getServer loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
+		srv.addConfigLine(_cfg.getVector());
+	}
+	std::cout << "getServer after loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
+	srv.printAll();
 	return srv;
 }
 
 bool ConfigParser::endParse() {
-	return true;
+	std::cout << "endParse called: " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
+//	if (_cfg.getSection() == GLOBAL || _cfg.getWord(0) == "}") {
+//		_cfg.nextLine();
+//	} //else if (_cfg.getSection() == "global" && _cfg.getWord(0) == "}") {
+//		return true;
+//	}
+	bool end_reached = false;
+	while (_cfg.nextLine() && !_cfg.emptyLine() && _cfg.processLine()) {
+		std::cout << "eP loop!";
+		if (_cfg.getWord(0) == "server" && _cfg.getLastWord() == "{")
+			return false;
+	}
+	//_cfg.nextLine();
+	std::cout << "endParse end: end_reached: " << std::boolalpha << end_reached << " " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
+	return end_reached;
 }
 
 bool ConfigParser::storeConfigLine() {

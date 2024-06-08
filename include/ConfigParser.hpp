@@ -10,8 +10,10 @@
 
 // usage: create instance with config file path, 
 // start parsing with startParse() which returns true if valid conf
-// get servers with getServer(), returns false when last server reached
-// finish parse with endParse(), returns true if parsing finished successfully
+// then run endParse which will return true if parsing has finished, if not then
+// get a Server instance with getServer()
+// // get servers with getServer(), returns false when last server reached
+// // finish parse with endParse(), returns true if parsing finished successfully
 class ConfigParser {
 	public:
 		ConfigParser(const std::string &filepath);

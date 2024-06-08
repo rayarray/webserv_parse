@@ -25,6 +25,7 @@ bool ConfigFile::nextLine() {
 	while (emptyLine())
 		if (!std::getline(_file, _line))
 			return false;
+	std::cout << "CF::nextLine [" << getSection() << "]" << getWord(0) << ":" << getWord(1) << std::endl;
 	return true;
 }
 
@@ -66,7 +67,11 @@ bool ConfigFile::processLine() {
 	//ws_get_next_nonws(_line, pos);
 }
 
-const std::string &ConfigFile::getSection() { return _sections.back(); }
+const std::string &ConfigFile::getSection() { 
+	if (_sections.empty())
+		return empty;
+	return _sections.back();
+}
 
 const std::string &ConfigFile::getWord(const size_t &num) {
 	return ((num < _words.size() ? _words.at(num) : empty));
