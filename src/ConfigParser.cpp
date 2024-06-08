@@ -49,18 +49,13 @@ Server ConfigParser::getServer() {
 
 bool ConfigParser::endParse() {
 	std::cout << "endParse called: " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
-//	if (_cfg.getSection() == GLOBAL || _cfg.getWord(0) == "}") {
-//		_cfg.nextLine();
-//	} //else if (_cfg.getSection() == "global" && _cfg.getWord(0) == "}") {
-//		return true;
-//	}
+	if (_cfg.getSection() == "global" && _cfg.getWord(0) == "server" && _cfg.getLastWord() == "{")
+		return true;
 	bool end_reached = false;
 	while (_cfg.nextLine() && !_cfg.emptyLine() && _cfg.processLine()) {
-		std::cout << "eP loop!";
 		if (_cfg.getWord(0) == "server" && _cfg.getLastWord() == "{")
 			return false;
 	}
-	//_cfg.nextLine();
 	std::cout << "endParse end: end_reached: " << std::boolalpha << end_reached << " " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
 	return end_reached;
 }
@@ -85,6 +80,8 @@ bool ConfigParser::storeConfigLine() {
 	_config_sections.push_back(section);
 	return true;
 }
+
+// bool ConfigParser::storeConfigLine(ConfigSection &ConfigSection) {}
 
 void ConfigParser::printCS() {
 	for (size_t i = 0; i < _config_sections.size(); i++)
