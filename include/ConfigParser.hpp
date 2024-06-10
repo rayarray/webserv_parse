@@ -29,9 +29,9 @@ class ConfigParser {
 
 	private:
 		bool storeConfigLine();
-		bool handleSubConfig();
+		bool parseSubSection(ConfigSection &subsection);
 
-		size_t _server_index;
+		//size_t _server_index;
 		std::vector<ConfigSection> _config_sections;
 		ConfigReference _ref;
 		ConfigFile _cfg;

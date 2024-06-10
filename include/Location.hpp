@@ -1,7 +1,8 @@
 #ifndef WS_LOCATION_HPP
 # define WS_LOCATION_HPP
 
-#include <string>
+# include <string>
+# include "ConfigSection.hpp"
 
 // listen x
 // server_name y z
@@ -16,9 +17,9 @@
 //		request_method
 //		cgi_extension .php  .py { }
 
-class Location {
+class Location : public ConfigSection {
 	public:
-		Location(std::string path);
+		Location(const std::string path);
 
 		bool setMethods(bool get, bool post, bool del);
 		bool setRedirection();
@@ -28,15 +29,15 @@ class Location {
 		bool setRequestMethod();
 		bool setCGI(std::string extension);
 		
-		const std::string path;
+		const std::string _path;
 
 		private:
 
-		bool get, post, del;
-		std::string redirection;
-		std::string rootpath;
-		bool dir_list;
-		std::string index_file;	
+		bool _get, _post, _del;
+		std::string _redirection;
+		std::string _rootpath;
+		bool _dir_list;
+		std::string _index_file;	
 };
 
 #endif

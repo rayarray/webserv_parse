@@ -25,7 +25,7 @@ bool ConfigFile::nextLine() {
 	while (emptyLine())
 		if (!std::getline(_file, _line))
 			return false;
-	std::cout << "CF::nextLine [" << getSection() << "]" << getWord(0) << ":" << getWord(1) << std::endl;
+	//std::cout << "CF::nextLine [" << getSection() << "]" << getWord(0) << ":" << getWord(1) << std::endl;
 	return true;
 }
 

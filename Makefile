@@ -1,6 +1,6 @@
 NAME		=	parsetest
 
-SRC			=	main.cpp ConfigParser.cpp ConfigSection.cpp ConfigReference.cpp ConfigFile.cpp Server.cpp Request.cpp
+SRC			=	main.cpp ConfigParser.cpp ConfigSection.cpp ConfigReference.cpp ConfigFile.cpp Server.cpp Location.cpp Request.cpp
 
 SRCDIR		=	src
 OBJDIR		=	obj

@@ -41,5 +41,4 @@ void ConfigSection::printAll() {
 			std::cout << _config_lines.at(i).at(j) << ":";
 		std::cout << std::endl;
 	}
-	std::cout << "END" << std::endl;
 }

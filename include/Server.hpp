@@ -22,7 +22,7 @@ class Server : public ConfigSection {
 		bool addServerName(const std::string name);
 		bool addErrorPage(const size_t nbr, const std::string file_path);
 		bool setClientMaxBodySize(const size_t size);
-		bool addLocation(Location location);
+		bool addLocation();
 
 		// accessed after setup
 		bool matchRequest(const std::string server_name, const size_t port);

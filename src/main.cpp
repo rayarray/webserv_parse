@@ -5,16 +5,23 @@
 // main for testing configparser, reads default.conf in current directory
 
 int main(void) {
-	ConfigFile cf("server.conf");
-	cf.print();
-	while (cf.nextLine() && !cf.emptyLine() && cf.processLine()) cf.print();
+	//ConfigFile cf("server.conf");
+	//cf.print();
+	//while (cf.nextLine() && !cf.emptyLine() && cf.processLine()) cf.print();
 	ConfigParser conf("server.conf");
 	bool start_parse = conf.startParse();
 	std::cout << std::boolalpha << "ConfigParser.startParse() = " << start_parse << std::endl;
-	Server serv = conf.getServer();
-	if (!conf.endParse())
-		Server serv2 = conf.getServer();
-	conf.printCS();
+	//Server serv = conf.getServer();
+	std::vector<Server> servers;
+	while (!conf.endParse()) {
+		servers.push_back(conf.getServer());
+		servers.back().printAll();
+	}
+	//bool end_parse = conf.endParse();
+	//std::cout << "endParse retuns: " << std::boolalpha << end_parse << std::endl;
+	//conf.printCS();
+	//serv.printAll();
+	//serv.addLocation();
 	// / // * configreference and configfile testing
 	// ConfigReference ref("config_defaults");
 	// ref.print();
