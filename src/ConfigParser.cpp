@@ -9,10 +9,9 @@ ConfigParser::ConfigParser(const std::string &filepath) : _ref("config_defaults"
 ConfigParser::~ConfigParser() {}
 
 bool ConfigParser::startParse() {
-	
 	do {
 		_cfg.processLine();
-		_cfg.print();
+		//_cfg.print();
 		if (_cfg.getSection() == "server")
 			break;
 		storeConfigLine();
@@ -23,7 +22,7 @@ bool ConfigParser::startParse() {
 }
 
 Server ConfigParser::getServer() {
-	std::cout << "getServer called: " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
+	//std::cout << "getServer called: " << _cfg.getSection() << ":" << _cfg.getLastWord() << std::endl;
 	if (_cfg.getSection() != "server" || _cfg.getLastWord() != "{")
 		throw std::runtime_error("Internal error: ConfigParser::getServer executed on non-server begin line");
 	if (!_cfg.nextLine() || !_cfg.processLine() || _cfg.getSection() != "server" || _cfg.getWord(0) != "listen")
@@ -42,20 +41,23 @@ Server ConfigParser::getServer() {
 	while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() != GLOBAL) {
 		//std::cout << "getServer loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
 		if (_cfg.getWord(0) == "location" && _cfg.getLastWord() == "{") {
-			std::cout << "getServer addloc start: " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
+			//std::cout << "getServer addloc start: " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
 			Location add_location(_cfg.getWord(1));
 			while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() == "location")
 				add_location.addConfigLine(_cfg.getVector());
-			std::cout << "getServer processed location: " << add_location._path << std::endl;
-			add_location.printAll();
-			std::cout << "getServer addloc end: " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
+			//std::cout << "getServer processed location: " << add_location._path << std::endl;
+			//add_location.printAll();
+			srv.addLocation(add_location);
+			//std::cout << "getServer addloc end: " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
 		}
 		else { 
 			srv.addConfigLine(_cfg.getVector());
 		}
 	}
-	std::cout << "getServer after loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
-	//srv.printAll();
+	//std::cout << "getServer after loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
+	srv.printAll();
+	srv.initialize();
+	srv.printData();
 	return srv;
 }
 

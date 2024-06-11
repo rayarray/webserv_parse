@@ -10,9 +10,10 @@ SERVER
 listen T
 server_name TT
 location T S
-location T S
 error_page N T
 LOCATION
 root T
 rewrite T
 method TT
+directory_index T
+default_index T

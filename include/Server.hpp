@@ -18,15 +18,19 @@ class Server : public ConfigSection {
 	public:
 		Server(const std::string listen, const size_t port);
 
-		// methods for setting up
+		void initialize();
 		bool addServerName(const std::string name);
-		bool addErrorPage(const size_t nbr, const std::string file_path);
-		bool setClientMaxBodySize(const size_t size);
+		bool addErrorPage(const std::string nbr, const std::string file_path);
+		//bool setClientMaxBodySize(const size_t size);
 		bool addLocation();
+		void addLocation(Location location);
 
 		// accessed after setup
 		bool matchRequest(const std::string server_name, const size_t port);
 		Request resolveRequest(const std::string request);
+
+		//debug
+		void printData();
 
 	private:
 		bool matchLocation(const std::string path);

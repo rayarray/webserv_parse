@@ -7,7 +7,7 @@ void ConfigSection::addConfigLine(const std::vector<std::string> line) {
 
 bool ConfigSection::doesLineExist(const std::string line) {
 	for (const std::vector<std::string>& match : _config_lines) {
-		if (match.at(0).find(line) == 0)
+		if (match.at(1).find(line) == 0)
 			return true;
 	}
 	return false;
@@ -15,14 +15,23 @@ bool ConfigSection::doesLineExist(const std::string line) {
 
 bool ConfigSection::doesLineExist(const std::string line, size_t &index) {
 	for (size_t i = 0; i < _config_lines.size(); i++) {
-		if (_config_lines.at(i).at(0).find(line) == 0)
+		//std::cout << "doesLineExist(" <<  line << ") searching " << _config_lines.at(i).at(1) << std::endl;
+		if (_config_lines.at(i).at(1).find(line) == 0)
+			return (index = i, true);
+	}
+	return false;
+}
+
+bool ConfigSection::doesLineExist(const std::string line, size_t &index, const size_t start) {
+	for (size_t i = start + 1; i < _config_lines.size(); i++) {
+		if (_config_lines.at(i).at(1).find(line) == 0)
 			return (index = i, true);
 	}
 	return false;
 }
 
 std::string const ConfigSection::getIndexArg(size_t index, size_t num) {
-	if (index < _config_lines.size() && num < _config_lines.at(index).size())
+	if (index < _config_lines.size() && ++num < _config_lines.at(index).size())
 		return _config_lines.at(index).at(num);
 	return "";
 }
