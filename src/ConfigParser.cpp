@@ -12,6 +12,7 @@ bool ConfigParser::startParse() {
 	do {
 		_cfg.processLine();
 		//_cfg.print();
+		_ref.checkLine(_cfg.getVector());
 		if (_cfg.getSection() == "server")
 			break;
 		storeConfigLine();
@@ -36,7 +37,7 @@ Server ConfigParser::getServer() {
 			throw std::runtime_error(error); 
 		}
 	}
-	std::cout << "creating server with " << _cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")) << " with port " << port << std::endl;
+	std::cout << "\e[0;91mcreating server with " << _cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")) << " with port " << port << "\e[0m" << std::endl;
 	Server srv(_cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")), port);
 	while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() != GLOBAL) {
 		//std::cout << "getServer loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
@@ -47,17 +48,15 @@ Server ConfigParser::getServer() {
 				add_location.addConfigLine(_cfg.getVector());
 			//std::cout << "getServer processed location: " << add_location._path << std::endl;
 			//add_location.printAll();
+			add_location.initialize();
 			srv.addLocation(add_location);
 			//std::cout << "getServer addloc end: " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
-		}
-		else { 
+		} else { 
 			srv.addConfigLine(_cfg.getVector());
 		}
 	}
 	//std::cout << "getServer after loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
-	srv.printAll();
 	srv.initialize();
-	srv.printData();
 	return srv;
 }
 
@@ -108,6 +107,5 @@ void ConfigParser::printCS() {
 		_config_sections.at(i).printAll();
 	// for (const ConfigSection &section : _config_sections)
 	// 	for (const std::string &s : section)
-
 	std::cout << "END" << std::endl;
 }

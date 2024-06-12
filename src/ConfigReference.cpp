@@ -57,6 +57,14 @@ bool ConfigReference::keyParamTypeMatch(const std::string section, const std::st
 	return false;
 }
 
+void ConfigReference::checkLine(std::vector<std::string> line) { 
+	std::cout << "cfgref::checkLine called with ";
+	for (const std::string &s : line) std::cout << "[" << s << "]";
+	std::cout << std::endl;
+	if (line.at(1) == "}") return;
+	std::cout << "checking match from defaults: " << std::boolalpha << keyExists(line.at(0), line.at(1)) << std::endl;
+}
+
 bool ConfigReference::processLine(const std::string &line) {
 	size_t pos = 0;
 	std::vector<std::string> processed_line;
@@ -91,6 +99,10 @@ bool ConfigReference::processLine(const std::string &line) {
 
 inline bool ConfigReference::validType(const char type) {
 	return (type == 'S' || type == 'N' || type == 'T');
+}
+
+char ConfigReference::checkType(const std::string &s) { (void)s; return 0;
+
 }
 
 void ConfigReference::print() {

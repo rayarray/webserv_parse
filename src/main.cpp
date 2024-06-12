@@ -15,7 +15,29 @@ int main(void) {
 	std::vector<Server> servers;
 	while (!conf.endParse()) {
 		servers.push_back(conf.getServer());
-		servers.back().printAll();
+		servers.back().printData();
+	}
+	{
+		Response response;
+		Request request(1, "www.example.com", 80, "/cgi-bin/view.py");
+		for (Server &srv : servers) {
+			if (srv.matchRequest(request)) {
+				response = srv.resolveRequest(request);
+		}	}
+		if (response.getType() != -100)
+			std::cout << "Response type [" << response.getType() << "] path [" << response.getPath() << "]" << std::endl;
+	}
+	{
+		Response response;
+		Request request(2, "otherserver.com", 8080, "/foobar.html");
+		for (Server &srv : servers) {
+			if (srv.matchRequest(request)) {
+				response = srv.resolveRequest(request);
+		}	}
+		if (response.getType() != -100)
+			std::cout << "Response type [" << response.getType() << "] path [" << response.getPath() << "]" << std::endl;
+		else 
+			std::cout << "Failed to match response to server" << std::endl;
 	}
 	//bool end_parse = conf.endParse();
 	//std::cout << "endParse retuns: " << std::boolalpha << end_parse << std::endl;

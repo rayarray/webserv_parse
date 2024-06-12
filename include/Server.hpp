@@ -7,6 +7,7 @@
 #include "ConfigSection.hpp"
 #include "Location.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 
 // listen one.example.com
 // server_name one.example.com www.one.example.com
@@ -26,8 +27,10 @@ class Server : public ConfigSection {
 		void addLocation(Location location);
 
 		// accessed after setup
-		bool matchRequest(const std::string server_name, const size_t port);
-		Request resolveRequest(const std::string request);
+		bool matchRequest(const std::string server_name, const size_t port); //todo
+		bool matchRequest(const Request &request);
+		Response resolveRequest(const std::string request); //todo
+		Response resolveRequest(const Request &request);
 
 		//debug
 		void printData();
@@ -37,7 +40,7 @@ class Server : public ConfigSection {
 
 		const std::string _listen_name;
 		const size_t _port;
-		size_t _client_max_body_size;
+		size_t _max_client_body_size;
 		std::vector<std::string> _server_names;
 		std::map<int, std::string> _error_pages;
 		std::vector<Location> _locations;

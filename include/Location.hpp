@@ -2,7 +2,10 @@
 # define WS_LOCATION_HPP
 
 # include <string>
+# include <stdexcept> // GCC wants this for std::runtime_error
 # include "ConfigSection.hpp"
+# include "Request.hpp"
+# include <iostream> //debug
 
 // listen x
 // server_name y z
@@ -22,8 +25,9 @@ class Location : public ConfigSection {
 		Location(const std::string path);
 
 		void initialize();
-		bool requestMatch(std::string request);
-		bool requestMatch(std::string request, std::string &filepath);
+		bool requestMatch(const std::string request);
+		bool requestMatch(const std::string request, std::string &filepath);
+		bool requestMatch(const Request &request, std::string &filepath);
 
 		// bool setMethods(bool get, bool post, bool del);
 		// bool setRedirection(); //todo
@@ -32,11 +36,14 @@ class Location : public ConfigSection {
 		// bool setDefaultIndex(std::string indexfilepath);
 		// bool setRequestMethod();
 		// bool setCGI(std::string extension); //todo
+
+		void printData();
 		
 		const std::string _path;
 
 		private:
 
+		bool methodAvailable(const int method);
 		bool _get, _post, _del;
 		std::string _rewrite;
 		std::string _rootpath;

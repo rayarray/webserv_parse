@@ -11,6 +11,7 @@ listen T
 server_name TT
 location T S
 error_page N T
+max_client_body_size N
 LOCATION
 root T
 rewrite T

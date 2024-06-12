@@ -1,7 +1,7 @@
 #include "ws_functions.hpp"
 #include "Server.hpp"
 
-Server::Server(const std::string listen, const size_t port) : ConfigSection("server"), _listen_name(listen), _port(port), _client_max_body_size(0) {}
+Server::Server(const std::string listen, const size_t port) : ConfigSection("server"), _listen_name(listen), _port(port), _max_client_body_size(0) {}
 
 void Server::initialize() {
 	size_t idx;
@@ -12,12 +12,6 @@ void Server::initialize() {
 			_server_names.push_back(getIndexArg(idx, i));
 	}
 	if (doesLineExist("error_page", idx)) {
-		std::cout << "ERROR_PAGE FOUND AT " << idx << std::endl;
-		size_t pidx = idx;
-		if (doesLineExist("error_page", idx, pidx))
-			std::cout << "ERROR_PAGE FOUND AT " << idx << std::endl;
-	}
-	if (doesLineExist("error_page", idx)) {
 		addErrorPage(getIndexArg(idx, 1), getIndexArg(idx, 2));
 		size_t previous_idx = idx;
 		while (doesLineExist("error_page", idx, previous_idx)) {
@@ -25,9 +19,8 @@ void Server::initialize() {
 			previous_idx = idx;
 		}
 	}
-	if (doesLineExist("client_max_body_size", idx)) {
-		_client_max_body_size = std::stoi(getIndexArg(idx, 1));
-	}
+	if (doesLineExist("max_client_body_size", idx))
+		_max_client_body_size = std::stoi(getIndexArg(idx, 1));
 }
 
 bool Server::addErrorPage(const std::string nbr, const std::string file_path) {
@@ -57,19 +50,47 @@ bool Server::matchRequest(const std::string server_name, const size_t port) {
 	return (_listen_name.find(server_name) == 0 && port == _port);
 }
 
-Request Server::resolveRequest(const std::string request) {
-	return Request("/usr/share/www" + request);
+bool Server::matchRequest(const Request &request) {
+	if (_listen_name == "*") return true;
+	if (request._port != _port)
+		return false;
+	if (_listen_name == request._host)
+		return true;
+	for (const std::string &s : _server_names) {
+		if (s == request._host)
+			return true;
+	}
+	return false;
+}
+
+Response Server::resolveRequest(const std::string request) {
+	return Response("/usr/share/www" + request);
+}
+
+Response Server::resolveRequest(const Request &request) {
+	std::string filepath;
+	for (Location &loc : _locations) {
+		if (loc._path != "/" && loc.requestMatch(request, filepath))
+			return (Response(filepath));
+	}
+	for (Location &loc : _locations) {
+		if (loc._path == "/" && loc.requestMatch(request, filepath))
+			return (Response(filepath));
+	}
+	return Response(403, "");
 }
 
 void Server::printData() {
-	std::cout << "Server.printData() : " << _listen_name << ":" << _port << std::endl;
-	if (_server_names.size() > 0) std::cout << "Names: ";
+	std::cout << "\e[0;32mServer.printData() : \e[0;92m" << _listen_name << ":" << _port << std::endl;
+	if (_server_names.size() > 0) std::cout << "\e[0;32mNames: ";
 	for (const std::string &s : _server_names)
 		std::cout << s << " | ";
 	std::cout << std::endl;
 	if (_error_pages.size() > 0) std::cout << "Error pages:" << std::endl;
+	if (_max_client_body_size > 0) std::cout << "Max client body size: " << _max_client_body_size << std::endl;
 	for (const std::pair<int, std::string> &p : _error_pages)
 		std::cout << p.first << ":" << p.second << std::endl;
 	for (Location &loc : _locations)
-		loc.printAll();
+		loc.printData();
+	std::cout << "\e[0m";
 }

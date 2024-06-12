@@ -95,7 +95,9 @@ bool ConfigFile::processParam(size_t &pos) {
 			|| (quotes && pos < _line.size() && std::isprint(_line.at(pos)))) {
 				if (_line.at(pos) == '"')
 					quotes = (!quotes) ? true : false;
-				param.push_back(_line.at(pos++));
+				else
+					param.push_back(_line.at(pos));
+				pos++;
 			}
 	if (quotes)
 		throw std::runtime_error("Unmatched quotes at keyword: " + _words.at(0));

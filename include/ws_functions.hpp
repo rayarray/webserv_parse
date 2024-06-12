@@ -2,6 +2,7 @@
 # define WS_WS_FUNCTIONS_HPP
 # include <vector>
 # include <string>
+# include <algorithm> // GCC requires for transform
 #include <iostream> // debug
 
 inline bool ws_wspace(char c) { return (c == ' ' || c == '\t'); }

@@ -19,12 +19,14 @@ class ConfigReference {
 		bool keyExists(const std::string section, const std::string keyword, size_t &index);
 		char keyParamType(const std::string section, const std::string keyword, const size_t param_num);
 		bool keyParamTypeMatch(const std::string section, const std::string keyword, const size_t param_num, const char type);
+		void checkLine(const std::vector<std::string> line);
 
 		void print(); // ! debug
 
 	private:
 		bool processLine(const std::string &line);
 		bool validType(const char type);
+		char checkType(const std::string &s);
 		
 		std::vector<std::vector<std::string> > _references;
 		std::string _section;
