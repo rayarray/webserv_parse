@@ -70,6 +70,8 @@ bool ConfigFile::processLine() {
 const std::string &ConfigFile::getSection() { 
 	if (_sections.empty())
 		return empty;
+	if (getLastWord() == "{")
+		return *(_sections.rbegin() + 1);
 	return _sections.back();
 }
 

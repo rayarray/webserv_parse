@@ -15,6 +15,6 @@ max_client_body_size N
 LOCATION
 root T
 rewrite T
-method TT
+methods TT
 directory_index T
 default_index T
