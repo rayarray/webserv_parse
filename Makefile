@@ -1,6 +1,7 @@
 NAME		=	parsetest
 
-SRC			=	main.cpp ConfigParser.cpp ConfigSection.cpp ConfigReference.cpp ConfigFile.cpp Server.cpp Location.cpp Request.cpp
+SRC			=	main.cpp ConfigParser.cpp ConfigSection.cpp ConfigReference.cpp ConfigFile.cpp \
+				Server.cpp Location.cpp Request.cpp Response.cpp
 
 SRCDIR		=	src
 OBJDIR		=	obj
@@ -16,16 +17,18 @@ INCLUDE		=	$(foreach i, $(INCDIR),-I $(i)) $(foreach l, $(LIBS),-I $(l))
 CFLAGS		=	-Wall -Wextra -Werror -std=c++17
 SFLAGS		=	-fsanitize=address -g
 
-CC 			=	c++
+#CC 			=	c++
 
 # == Determine OS and CPU core count =
 OS := $(shell uname)
 
 ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+  CC:=g++
 endif
 ifeq ($(OS),Darwin) # Assume Mac OS X
   NPROCS:=$(shell sysctl hw.ncpu | grep -o '[0-9]\+')
+  CC:=c++
 endif
 # ====================================
 
