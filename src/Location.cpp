@@ -1,4 +1,5 @@
 #include "Location.hpp"
+#include "ws_functions.hpp"
 
 Location::Location(const std::string path) : ConfigSection("location"), _path(path), _get(false), _post(false), _del(false), _dir_list(false) {}
 
@@ -30,15 +31,16 @@ void Location::initialize() {
 }
 
 bool Location::requestMatch(const std::string request, std::string &filepath) {
-	std::cout << "location.requestmatch called, path[" << _path << "] req[" << request << "]" << std::endl;
+	std::cout << "DEPRECATED location.requestmatch called, path[" << _path << "] req[" << request << "]" << std::endl;
 	if (request.find(_path) == 0)
 		return (filepath = _rootpath + request, true);
 	return false;
 }
 
 bool Location::requestMatch(const Request &request, std::string &filepath) {
+	//std::cout << "BREAK" << std::endl;
 	if (request._path.find(_path) == 0 && methodAvailable(request._method))
-		return (filepath = _rootpath + request._path, true);
+		return (filepath = _rootpath + request._path.substr(_path.size() - 1, std::string::npos), true);
 	return false;
 }
 

@@ -70,9 +70,9 @@ bool ConfigReference::keyParamTypeMatch(const std::string section, const std::st
 
 void ConfigReference::checkLine(std::vector<std::string> line) {
 	size_t idx;
-	//std::cout << "cfgref::checkLine called with ";
-	//for (const std::string &s : line) std::cout << "[" << s << "]";
-	//std::cout << std::endl;
+	std::cout << "cfgref::checkLine called with ";
+	for (const std::string &s : line) std::cout << "[" << s << "]";
+	std::cout << std::endl;
 	if (line.at(1) == "}") return;
 	//	throw std::runtime_error("Invalid subsection: " + line.at(0) + "!");
 	//std::string key_found = (keyExists(line.at(0), line.at(1))) ? "\e[0;32mtrue\e[0m" : "\e[0;31mfalse\e[0m";

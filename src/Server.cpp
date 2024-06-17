@@ -51,6 +51,7 @@ bool Server::matchRequest(const std::string server_name, const size_t port) {
 }
 
 bool Server::matchRequest(const Request &request) {
+	std::cout << "server matchRequest called for server:" << _listen_name << std::endl;
 	if (_listen_name == "*") return true;
 	if (request._port != _port)
 		return false;
@@ -63,21 +64,36 @@ bool Server::matchRequest(const Request &request) {
 	return false;
 }
 
-Response Server::resolveRequest(const std::string request) {
-	return Response("/usr/share/www" + request);
-}
-
 Response Server::resolveRequest(const Request &request) {
 	std::string filepath;
+	std::cout << "resolverRequest called, ws_getlastchar: " << ws_getlastchar('/', request._path) << std::endl;
+	if (ws_getlastchar('/', request._path) != 0) {
+		size_t last_slash = ws_getlastchar('/', request._path);
+		for (Location &loc : _locations) {
+			std::cout << "rR matching location: " << loc._path << " last_slash:" << last_slash << " locpathsize:" << loc._path.size() << std::endl;
+			if (loc._path.size() == last_slash + 1 && loc._path.at(last_slash) == '/' && loc.requestMatch(request, filepath))
+				return (Response(filepath));
+	}	}
 	for (Location &loc : _locations) {
+		//std::cout << "rR searching non-/ locations" << std::endl;
 		if (loc._path != "/" && loc.requestMatch(request, filepath))
 			return (Response(filepath));
 	}
 	for (Location &loc : _locations) {
+		//std::cout << "rR searching / location" << std::endl;
 		if (loc._path == "/" && loc.requestMatch(request, filepath))
 			return (Response(filepath));
 	}
-	return Response(403, "");
+	return Response(403, getErrorPage(403));
+}
+
+// searches _error_pages for given error number, returns string if found or empty string if not
+std::string Server::getErrorPage(const size_t page_num) {
+	try {
+		return _error_pages.at(page_num);
+	} catch (const std::exception &e) {
+		return "";
+	}
 }
 
 void Server::printData() {
@@ -88,7 +104,7 @@ void Server::printData() {
 	std::cout << std::endl;
 	if (_error_pages.size() > 0) std::cout << "Error pages:" << std::endl;
 	if (_max_client_body_size > 0) std::cout << "Max client body size: " << _max_client_body_size << std::endl;
-	for (const std::pair<int, std::string> &p : _error_pages)
+	for (const std::pair<const size_t, std::string> &p : _error_pages)
 		std::cout << p.first << ":" << p.second << std::endl;
 	for (Location &loc : _locations)
 		loc.printData();

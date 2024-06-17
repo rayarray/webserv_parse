@@ -5,9 +5,9 @@
 # include <algorithm> // GCC requires for transform
 #include <iostream> // debug
 
-inline bool ws_wspace(char c) { return (c == ' ' || c == '\t'); }
+inline bool ws_wspace(const char c) { return (c == ' ' || c == '\t'); }
 
-inline bool ws_keyword_char(char c) { return (std::isalpha(c) || c == '_' || c == '-' ); }
+inline bool ws_keyword_char(const char c) { return (std::isalpha(c) || c == '_' || c == '-' ); }
 
 inline const std::string ws_getword(const std::string &s) {
 	size_t end = 0;
@@ -39,7 +39,7 @@ inline bool ws_checkword_lower(const std::string &s, const std::vector<std::stri
 	return false;
 }
 
-inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index, size_t start) {
+inline bool ws_checkword_lower(const std::string &s, const std::vector<std::string> &list, size_t &index, const size_t start) {
 	if (!(start + 1 < list.size()))
 		return false;
 	std::vector<std::string> sub_list(list.begin() + 1 + start, list.end()); // ! removed + 1
@@ -85,7 +85,7 @@ inline size_t ws_size(const std::string &s) {
 }
 
 // get num:th argument from config defaults line
-inline char ws_getarg(size_t num, std::string s) {
+inline char ws_getarg(size_t num, const std::string &s) {
 	size_t pos = 0;
 	while (pos < s.size() && !ws_wspace(s.at(pos)))
 		pos++;
@@ -107,7 +107,7 @@ inline char ws_getarg(size_t num, std::string s) {
 }
 
 // gets nth arg from config line, assumes syntax checked
-inline std::string ws_getargstr(size_t num, std::string s) {
+inline std::string ws_getargstr(size_t num, const std::string &s) {
 	if (num == 0) return "";
 	size_t pos = 0;
 	std::string arg;
@@ -135,7 +135,7 @@ inline std::string ws_getargstr(size_t num, std::string s) {
 }
 
 // returns how many arguments a keyword takes, does not count repeats
-inline size_t ws_getarglen(std::string s) {
+inline size_t ws_getarglen(const std::string &s) {
 	size_t pos = 0;
 	size_t len = 0;
 	while (pos < s.size() && !ws_wspace(s.at(pos)))
@@ -156,7 +156,7 @@ inline size_t ws_getarglen(std::string s) {
 	throw std::runtime_error("Error at ws_getarglen");
 }
 
-inline bool ws_checkend(std::string s) {
+inline bool ws_checkend(const std::string &s) {
 	size_t pos = 0;
 	while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
 		pos++;
@@ -167,6 +167,15 @@ inline bool ws_checkend(std::string s) {
 	while (!ws_endl(s, pos) && ws_wspace(s.at(pos)))
 		pos++;
 	return ws_endl(s, pos);
+}
+
+// checks string for c, returns position of last instance. max (std::string::npos) if not found
+inline size_t ws_getlastchar(const char c, const std::string &s) {
+	size_t pos = std::string::npos;
+	for (size_t i = 0; i < s.size(); i++)
+		if (s.at(i) == c)
+			pos = i;
+	return pos;
 }
 
 #endif

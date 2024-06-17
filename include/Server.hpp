@@ -29,20 +29,21 @@ class Server : public ConfigSection {
 		// accessed after setup
 		bool matchRequest(const std::string server_name, const size_t port); //todo
 		bool matchRequest(const Request &request);
-		Response resolveRequest(const std::string request); //todo
+		//Response resolveRequest(const std::string request); //todo
 		Response resolveRequest(const Request &request);
+		std::string getErrorPage(const size_t page_num);
 
 		//debug
 		void printData();
 
+		const std::string _listen_name;
 	private:
 		bool matchLocation(const std::string path);
 
-		const std::string _listen_name;
 		const size_t _port;
 		size_t _max_client_body_size;
 		std::vector<std::string> _server_names;
-		std::map<int, std::string> _error_pages;
+		std::map<size_t, std::string> _error_pages;
 		std::vector<Location> _locations;
 };
 

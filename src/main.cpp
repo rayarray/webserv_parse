@@ -17,27 +17,47 @@ int main(void) {
 		servers.push_back(conf.getServer());
 		servers.back().printData();
 	}
-	{
-		Response response;
+	{	Response response;
+		Request request(1, "www.example.com", 80, "/cgi-bin");
+		for (Server &srv : servers) {
+			if (srv.matchRequest(request)) {
+				response = srv.resolveRequest(request);
+		}	}
+		if (response.getType() != -100)
+			std::cout << "\e[0;33mReq path [" << request._path << "] Response type [" << response.getType() << "] path [" << response.getPath() << "]\e[0m" << std::endl;
+	}
+	{	Response response;
 		Request request(1, "www.example.com", 80, "/cgi-bin/view.py");
 		for (Server &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
 		if (response.getType() != -100)
-			std::cout << "Response type [" << response.getType() << "] path [" << response.getPath() << "]" << std::endl;
+			std::cout << "\e[0;33mReq path [" << request._path << "] Response type [" << response.getType() << "] path [" << response.getPath() << "]\e[0m" << std::endl;
 	}
-	{
-		Response response;
+	{	Response response;
+		Request request(REQ_POST, "www.example.com", 80, "/cgi-bin/special/specialcgi.py");
+		for (Server &srv : servers) {
+			if (srv.matchRequest(request)) {
+				response = srv.resolveRequest(request);
+		}	}
+		if (response.getType() != -100)
+			std::cout << "\e[0;33mReq path [" << request._path << "] Response type [" << response.getType() << "] path [" << response.getPath() << "]\e[0m" << std::endl;
+	}
+	{	Response response;
 		Request request(2, "otherserver.com", 8080, "/foobar.html");
 		for (Server &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
 		if (response.getType() != -100)
-			std::cout << "Response type [" << response.getType() << "] path [" << response.getPath() << "]" << std::endl;
+			std::cout << "\e[0;33mReq path [" << request._path << "] Response type [" << response.getType() << "] path [" << response.getPath() << "]\e[0m" << std::endl;
 		else 
 			std::cout << "Failed to match response to server" << std::endl;
+	}
+	for (Server &srv : servers) {
+		size_t page = 404;
+		std::cout << "querying server [" << srv._listen_name << "] for error page " << page << ": " << srv.getErrorPage(page) << std::endl;
 	}
 	//bool end_parse = conf.endParse();
 	//std::cout << "endParse retuns: " << std::boolalpha << end_parse << std::endl;
