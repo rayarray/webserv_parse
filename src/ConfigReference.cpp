@@ -33,6 +33,17 @@ bool ConfigReference::keyExists(const std::string section, const std::string key
 	return false;
 }
 
+char ConfigReference::keyParamType(const size_t index, const size_t param_num) {
+	size_t pnum = param_num + 2;
+	if (pnum >= _references.at(index).size()) {
+		if (_references.at(index).size() > 2 && _references.at(index).back().size() == 2)
+			return _references.at(index).back().at(0);
+		else
+			return 0;
+	}
+	return (_references.at(index).at(pnum).at(0));
+}
+
 // gets parameter number x, first is 0
 char ConfigReference::keyParamType(const std::string section, const std::string keyword, const size_t param_num) {
 	size_t pnum = param_num + 2;
@@ -57,13 +68,45 @@ bool ConfigReference::keyParamTypeMatch(const std::string section, const std::st
 	return false;
 }
 
-void ConfigReference::checkLine(std::vector<std::string> line) { 
-	std::cout << "cfgref::checkLine called with ";
-	for (const std::string &s : line) std::cout << "[" << s << "]";
-	std::cout << std::endl;
+void ConfigReference::checkLine(std::vector<std::string> line) {
+	size_t idx;
+	//std::cout << "cfgref::checkLine called with ";
+	//for (const std::string &s : line) std::cout << "[" << s << "]";
+	//std::cout << std::endl;
 	if (line.at(1) == "}") return;
-	std::cout << "checking match from defaults: " << std::boolalpha << keyExists(line.at(0), line.at(1)) << std::endl;
+	//	throw std::runtime_error("Invalid subsection: " + line.at(0) + "!");
+	//std::string key_found = (keyExists(line.at(0), line.at(1))) ? "\e[0;32mtrue\e[0m" : "\e[0;31mfalse\e[0m";
+	if (!keyExists(line.at(0), line.at(1), idx))
+		throw std::runtime_error("Syntax keyword not found: " + line.at(1));
+	//std::cout << "checking match for (" << line.at(0) << ":" << line.at(1) << ")from defaults: " << "true" << std::endl;
+	//std::cout << "line.size: " << line.size() << "ref.size: " << _references.at(idx).size() << std::endl;
+	//for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) 
+	//	std::cout << "P[" << i << "]:" << keyParamType(idx, i - 2) << "=" << checkType(line.at(i)) << "[" << line.at(i) << "]" << std::endl; 
+	//std::cout << std::endl;
+	for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++)
+		if (!validType(checkType(line.at(i)), keyParamType(idx, i - 2))) 
+			throw std::runtime_error("Keyword argument type mismatch at keyword: " + line.at(1) + ", argument type: "
+			+ typeCharToString(checkType(line.at(i))) + " does not match type:" + typeCharToString(keyParamType(idx, i - 2)));
 }
+
+// char ConfigReference::extractType(const std::string arg) {
+// 	if (arg.empty()) return 0;
+// 	if (arg.size() == 1 && arg.at(0) == '{') return 'S';
+// 	bool is_type = true;
+// 	if (arg.size() < 11) {
+// 		for (const char &c : arg)
+// 			if (!std::isdigit(c))
+// 				is_type = false;
+// 		if (is_type) return 'N';
+// 	}
+// 	is_type = true;
+// 	for (const char &c : arg) {
+// 		if (!std::isprint(c))
+// 			is_type = false;
+// 		if (is_type) return 'T';
+// 	}
+// 	throw std::runtime_error("Argument type invalid!");
+// }
 
 bool ConfigReference::processLine(const std::string &line) {
 	size_t pos = 0;
@@ -101,8 +144,34 @@ inline bool ConfigReference::validType(const char type) {
 	return (type == 'S' || type == 'N' || type == 'T');
 }
 
-char ConfigReference::checkType(const std::string &s) { (void)s; return 0;
+inline bool ConfigReference::validType(const char cfg_type, const char ref_type) {
+	return (cfg_type == ref_type || (cfg_type == 'N' && ref_type == 'T'));
+}
 
+char ConfigReference::checkType(const std::string &s) {
+	if (s.empty()) return 0;
+	if (s.size() == 1 && s.at(0) == '{') return 'S';
+	bool is_type = true;
+	if (s.size() < 11) {
+		for (const char &c : s)
+			if (!std::isdigit(c))
+				is_type = false;
+		if (is_type) return 'N';
+	}
+	is_type = true;
+	for (const char &c : s) {
+		if (!std::isprint(c))
+			is_type = false;
+		if (is_type) return 'T';
+	}
+	throw std::runtime_error("Argument type invalid!");
+}
+
+std::string ConfigReference::typeCharToString(const char c) {
+	if (c == 'S') return "{";
+	else if (c == 'N') return "number";
+	else if (c == 'T') return "text";
+	return "";
 }
 
 void ConfigReference::print() {
