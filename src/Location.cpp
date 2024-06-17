@@ -59,7 +59,7 @@ void Location::printData() {
 }
 
 bool Location::methodAvailable(const int method) {
-	std::cout << "methodAvailable called, get:" << std::boolalpha << _get << " post:" << _post << " del:" << _del << std::endl;
+	//std::cout << "methodAvailable called, get:" << std::boolalpha << _get << " post:" << _post << " del:" << _del << std::endl;
 	if (_get && method == REQ_GET) return true;
 	if (_post && method == REQ_POST) return true;
 	if (_del && method == REQ_DEL) return true;

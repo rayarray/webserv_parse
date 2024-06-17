@@ -55,6 +55,17 @@ int main(void) {
 		else 
 			std::cout << "Failed to match response to server" << std::endl;
 	}
+	{	Response response;
+		Request request(2, "breaksparse.org", 80, "/shouldbe404.html");
+		for (Server &srv : servers) {
+			if (srv.matchRequest(request)) {
+				response = srv.resolveRequest(request);
+		}	}
+		if (response.getType() != -100)
+			std::cout << "\e[0;33mReq path [" << request._path << "] Response type [" << response.getType() << "] path [" << response.getPath() << "]\e[0m" << std::endl;
+		else 
+			std::cout << "Failed to match response to server" << std::endl;
+	}
 	for (Server &srv : servers) {
 		size_t page = 404;
 		std::cout << "querying server [" << srv._listen_name << "] for error page " << page << ": " << srv.getErrorPage(page) << std::endl;
