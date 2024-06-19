@@ -22,7 +22,7 @@ bool ConfigParser::startParse() {
 	return (true);
 }
 
-Server ConfigParser::getServer() {
+Server ConfigParser::getServerOld() {
 	//std::cout << "getServer called: " << _cfg.getSection() << ":" << _cfg.getWord(0) << ":" << _cfg.getLastWord() << std::endl;
 	if (_cfg.getSection() != "global" || _cfg.getWord(0) != "server" || _cfg.getLastWord() != "{")
 		throw std::runtime_error("Internal error: ConfigParser::getServer executed on non-server begin line");
@@ -39,7 +39,8 @@ Server ConfigParser::getServer() {
 		}
 	}
 	std::cout << "\e[0;91mcreating server with " << _cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")) << " with port " << port << "\e[0m" << std::endl;
-	Server srv(_cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")), port);
+	//Server srv(_cfg.getWord(1).substr(0, _cfg.getWord(1).find(":")), port);
+	Server srv;
 	while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() != GLOBAL) {
 		_ref.checkLine(_cfg.getVector());
 		//std::cout << "getServer loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
@@ -62,6 +63,29 @@ Server ConfigParser::getServer() {
 	//std::cout << "getServer after loop " << _cfg.getSection() << ":"  << _cfg.getWord(0) << "-" << _cfg.getWord(1) << std::endl;
 	srv.initialize();
 	return srv;
+}
+
+Server ConfigParser::getServer() {
+	if (_cfg.getSection() != "global" || _cfg.getWord(0) != "server" || _cfg.getLastWord() != "{")
+		throw std::runtime_error("Internal error: ConfigParser::getServer executed on non-server begin line");
+	_ref.checkLine(_cfg.getVector());
+	std::cout << "\e[0;91mcreating server\e[0m" << std::endl;
+	Server srv;
+	while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() != GLOBAL) {
+		_ref.checkLine(_cfg.getVector());
+		if (_cfg.getWord(0) == "location" && _cfg.getLastWord() == "{") {
+			Location add_location(_cfg.getWord(1));
+			while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() == "location") {
+				_ref.checkLine(_cfg.getVector());
+				add_location.addConfigLine(_cfg.getVector());
+			}
+			add_location.initialize();
+			srv.addLocation(add_location);
+		} else {
+			srv.addConfigLine(_cfg.getVector());
+		}
+	}
+	return (srv.initialize(), srv);
 }
 
 bool ConfigParser::endParse() {

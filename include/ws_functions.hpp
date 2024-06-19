@@ -22,8 +22,7 @@ inline bool ws_checkword(const std::string &s, const std::vector<std::string> &l
 	for (index = 0; index < list.size(); index++) {
 		if (s.find(list.at(index)) == 0) {
 			return true;
-		}
-	}
+	}	}
 	return false;
 }
 

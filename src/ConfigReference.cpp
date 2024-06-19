@@ -70,23 +70,31 @@ bool ConfigReference::keyParamTypeMatch(const std::string section, const std::st
 
 void ConfigReference::checkLine(std::vector<std::string> line) {
 	size_t idx;
-	//std::cout << "cfgref::checkLine called with ";
-	//for (const std::string &s : line) std::cout << "[" << s << "]";
-	//std::cout << std::endl;
+	std::cout << "cfgref::checkLine called with ";
+	for (const std::string &s : line) std::cout << "[" << s << "]";
+	std::cout << std::endl;
 	if (line.at(1) == "}") return;
 	//	throw std::runtime_error("Invalid subsection: " + line.at(0) + "!");
 	//std::string key_found = (keyExists(line.at(0), line.at(1))) ? "\e[0;32mtrue\e[0m" : "\e[0;31mfalse\e[0m";
 	if (!keyExists(line.at(0), line.at(1), idx))
 		throw std::runtime_error("Syntax keyword not found: " + line.at(1));
+	std::cout << "cfgref::checkLine references line: ";
+	for (const std::string &s : _references.at(idx)) std::cout << "[" << s << "]";
+	std:: cout << std::endl;
 	//std::cout << "checking match for (" << line.at(0) << ":" << line.at(1) << ")from defaults: " << "true" << std::endl;
 	//std::cout << "line.size: " << line.size() << "ref.size: " << _references.at(idx).size() << std::endl;
 	//for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) 
 	//	std::cout << "P[" << i << "]:" << keyParamType(idx, i - 2) << "=" << checkType(line.at(i)) << "[" << line.at(i) << "]" << std::endl; 
 	//std::cout << std::endl;
-	for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++)
+	//for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) { // ! removed _references size check
+	if (_references.at(idx).back().size() == 1 && line.size() != _references.at(idx).size())
+		throw std::runtime_error("Argument count does not match at keyword: " + line.at(1));
+	for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) {
+		std::cout << "checking arg [" << i << "][" << line.at(i) << "], keyparamtype:" << keyParamType(idx, i - 2) << " ref.at(idx).size: " << _references.at(idx).size() << " line.size:" << line.size() << std::endl;
 		if (!validType(checkType(line.at(i)), keyParamType(idx, i - 2))) 
 			throw std::runtime_error("Keyword argument type mismatch at keyword: " + line.at(1) + ", argument type: "
 			+ typeCharToString(checkType(line.at(i))) + " does not match type:" + typeCharToString(keyParamType(idx, i - 2)));
+	}
 }
 
 // char ConfigReference::extractType(const std::string arg) {

@@ -26,6 +26,7 @@ class ConfigParser {
 		void printCS();
 
 		//std::string _error;
+		Server getServerOld(); // deprecated
 
 	private:
 		bool storeConfigLine();

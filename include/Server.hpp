@@ -17,7 +17,7 @@
 
 class Server : public ConfigSection {
 	public:
-		Server(const std::string listen, const size_t port);
+		Server();
 
 		void initialize();
 		bool addServerName(const std::string name);
@@ -33,18 +33,37 @@ class Server : public ConfigSection {
 		Response resolveRequest(const Request &request);
 		std::string getErrorPage(const size_t page_num);
 
-		//debug
-		void printData();
-
-		const std::string _listen_name;
+		//const std::string _listen_name;
 	private:
-		bool matchLocation(const std::string path);
+		//bool matchLocation(const std::string path); // nonexisting
+		bool matchPort(const size_t port);
+		void addPort(const size_t port);
 
-		const size_t _port;
+		//const size_t _port;
 		size_t _max_client_body_size;
+		std::vector<size_t> _ports;
 		std::vector<std::string> _server_names;
 		std::map<size_t, std::string> _error_pages;
 		std::vector<Location> _locations;
+	public: //debug function(s) and exception(s)
+		void printData();
+		std::string const printId() const;
+		// friend std::ostream &operator<<(std::ostream& stream, const ::Server& server);
+		class ServerException : public std::exception {
+			public:
+				ServerException(std::string const msg) : _msg(msg) {}
+				const char *what() const noexcept override { return _msg.c_str(); }
+			private:
+			const std::string _msg;
+		};
 };
+
+// std::ostream &operator<<(std::ostream& stream, const ::Server& server) {
+// 	if (!server._server_names.empty())
+// 		stream << server._server_names.at(0);
+// 	for (size_t const &p : server._ports)
+// 		stream << ":" << p;
+// 	return stream;
+// }
 
 #endif

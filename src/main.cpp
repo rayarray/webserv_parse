@@ -68,7 +68,7 @@ int main(void) {
 	}
 	for (Server &srv : servers) {
 		size_t page = 404;
-		std::cout << "querying server [" << srv._listen_name << "] for error page " << page << ": " << srv.getErrorPage(page) << std::endl;
+		std::cout << "querying server [" << srv.printId() << "] for error page " << page << ": " << srv.getErrorPage(page) << std::endl;
 	}
 	//bool end_parse = conf.endParse();
 	//std::cout << "endParse retuns: " << std::boolalpha << end_parse << std::endl;

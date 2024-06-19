@@ -7,7 +7,7 @@ ntttest N TT
 HTTP
 max_client_body_size N
 SERVER
-listen T
+listen NN
 server_name TT
 location T S
 error_page N T
