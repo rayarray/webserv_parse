@@ -86,7 +86,6 @@ void ConfigReference::checkLine(std::vector<std::string> line) {
 	//for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) 
 	//	std::cout << "P[" << i << "]:" << keyParamType(idx, i - 2) << "=" << checkType(line.at(i)) << "[" << line.at(i) << "]" << std::endl; 
 	//std::cout << std::endl;
-	//for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) { // ! removed _references size check
 	if (_references.at(idx).back().size() == 1 && line.size() != _references.at(idx).size())
 		throw std::runtime_error("Argument count does not match at keyword: " + line.at(1));
 	for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) {

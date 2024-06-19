@@ -27,7 +27,9 @@ void Server::initialize() {
 			size_t const new_port = std::stoi(getIndexArg(idx, i));
 			if (matchPort(new_port))
 				throw ServerException("Duplicate ports in server");
-			_ports.push_back(std::stoi(getIndexArg(idx, i)));
+			if (new_port == 0 || new_port > 65535)
+				throw ServerException("Invalid port specified");
+			_ports.push_back(new_port);
 		}
 		previous_idx = idx;
 		first = 0;
