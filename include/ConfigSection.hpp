@@ -16,14 +16,15 @@ class ConfigSection {
 		bool doesLineExist(const std::string line);
 		bool doesLineExist(const std::string line, size_t &index);
 		bool doesLineExist(const std::string line, size_t &index, const size_t start);
-		std::string const getIndexArg(size_t index, size_t num);
-		std::string const getIndexArg(std::string keyword, size_t num);
-
-		void printAll();
+		std::string const &getIndexArg(size_t index, size_t num);
+		std::string const &getIndexArg(std::string keyword, size_t num);
 
 		const std::string _section_name;
+		const std::string _empty = "";
 	private:
 		std::vector<std::vector<std::string> > _config_lines;
+	public: // ! debug
+		void printAll();
 };
 
 #endif

@@ -5,23 +5,6 @@ Server::Server() : ConfigSection("server"), _max_client_body_size(0) {}
 
 void Server::initialize() {
 	size_t idx, previous_idx, first = 1;
-	//std::cout << "SERVER INITIALIZE" << std::endl;
-	printAll();
-	// if (doesLineExist("listen", idx)) {
-	// 	for (size_t i = 1; !getIndexArg(idx, i).empty(); i++) {
-	// 		size_t const new_port = std::stoi(getIndexArg(idx, i));
-	// 		if (matchPort(new_port))
-	// 			throw ServerException("Duplicate ports in server");
-	// 		_ports.push_back(std::stoi(getIndexArg(idx, i)));
-	// 	}
-	// 	size_t previous_idx = idx;
-	// 	while (doesLineExist("listen", idx, previous_idx))
-	// 		for (size_t i = 1; !getIndexArg(idx, i).empty(); i++) {
-	// 			size_t const new_port = std::stoi(getIndexArg(idx, i));
-	// 			if (matchPort(new_port))
-	// 				throw ServerException("Duplicate ports in server");
-	// 			_ports.push_back(std::stoi(getIndexArg(idx, i)));
-	// 		}
 	while ((first && doesLineExist("listen", idx)) || (!first && doesLineExist("listen", idx, previous_idx))) {
 		for (size_t i = 1; !getIndexArg(idx, i).empty(); i++) {
 			size_t const new_port = std::stoi(getIndexArg(idx, i));
@@ -59,35 +42,14 @@ bool Server::addErrorPage(const std::string nbr, const std::string file_path) {
 	return true;
 }
 
-//deprecated
-bool Server::addLocation() {
-	size_t idx;
-	std::cout << "srv:addLoc:doesLineExist('location') :" << std::boolalpha << doesLineExist("location", idx) << std::endl;
-	Location location(getIndexArg(idx, 1));
-	while (getIndexArg(idx, 1) != "}") {
-		for (size_t i = 0;!getIndexArg(idx, i).empty();i++)
-			std::cout << getIndexArg(idx, i) << ":";
-		std::cout << std::endl;
-		idx++;
-	}
-	std::cout << "addLoc end: " << getIndexArg(idx, 0) << "-" << getIndexArg(idx, 1) << std::endl;
-	return (location.initialize(), _locations.push_back(location), true);
-}
-
 void Server::addLocation(Location location) {
 	for (const Location &loc : _locations)
 		if (loc._path == location._path)
-			throw std::runtime_error("Server cannot have two matching locations!");
+			throw ServerException("Server cannot have two matching locations!");
 	_locations.push_back(location);
 }
 
-// shouldn't be in use
-bool Server::matchRequest(const std::string server_name, const size_t port) {
-	return ((void)server_name, (void)port, true);
-}
-
 bool Server::matchRequest(const Request &request) {
-	//std::cout << "server matchRequest called for server:" << _listen_name << std::endl;
 	if (!matchPort(request._port))
 		return false;
 	if (_server_names.size() == 1 && _server_names.at(0) == "*") return true;
@@ -100,21 +62,17 @@ bool Server::matchRequest(const Request &request) {
 
 Response Server::resolveRequest(const Request &request) {
 	std::string filepath;
-	//std::cout << "resolverRequest called, ws_getlastchar: " << ws_getlastchar('/', request._path) << std::endl;
 	if (ws_getlastchar('/', request._path) != 0) {
 		size_t last_slash = ws_getlastchar('/', request._path);
 		for (Location &loc : _locations) {
-			//std::cout << "rR matching location: " << loc._path << " last_slash:" << last_slash << " locpathsize:" << loc._path.size() << std::endl;
 			if (loc._path.size() == last_slash + 1 && loc._path.at(last_slash) == '/' && loc.requestMatch(request, filepath))
 				return (Response(filepath));
 	}	}
 	for (Location &loc : _locations) {
-		//std::cout << "rR searching non-/ locations" << std::endl;
 		if (loc._path != "/" && loc.requestMatch(request, filepath))
 			return (Response(filepath));
 	}
 	for (Location &loc : _locations) {
-		//std::cout << "rR searching / location" << std::endl;
 		if (loc._path == "/" && loc.requestMatch(request, filepath))
 			return (Response(filepath));
 	}

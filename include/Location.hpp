@@ -7,10 +7,6 @@
 # include "Request.hpp"
 # include <iostream> //debug
 
-// listen x
-// server_name y z
-// error_page
-// client_max_body_size
 // location /
 //		http_methods GET POST DEL
 //		http_redirection
@@ -25,30 +21,20 @@ class Location : public ConfigSection {
 		Location(const std::string path);
 
 		void initialize();
-		bool requestMatch(const std::string request);
-		bool requestMatch(const std::string request, std::string &filepath);
 		bool requestMatch(const Request &request, std::string &filepath);
-
-		// bool setMethods(bool get, bool post, bool del);
-		// bool setRedirection(); //todo
-		// bool setRoot(std::string rootpath);
-		// bool setDirectoryList(bool yesno);
-		// bool setDefaultIndex(std::string indexfilepath);
-		// bool setRequestMethod();
-		// bool setCGI(std::string extension); //todo
-
-		void printData();
 		
 		const std::string _path;
 
-		private:
-
+	private:
 		bool methodAvailable(const int method);
 		bool _get, _post, _del;
 		std::string _rewrite;
 		std::string _rootpath;
 		bool _dir_list;
-		std::string _index_file;	
+		std::string _index_file;
+
+	public: //debug
+		void printData();
 };
 
 #endif

@@ -5,7 +5,6 @@ Location::Location(const std::string path) : ConfigSection("location"), _path(pa
 
 void Location::initialize() {
 	size_t idx = 0;
-	//if (doesLineExist("methods")) std::cout << "METHODS ARE PRESENT" << std::endl;
 	if (doesLineExist("methods", idx)) {
 		for (size_t i = 1; !getIndexArg(idx, i).empty(); i++) {
 			if (getIndexArg(idx, i) == "GET")
@@ -30,17 +29,17 @@ void Location::initialize() {
 		_index_file = getIndexArg(idx, 1);
 }
 
-bool Location::requestMatch(const std::string request, std::string &filepath) {
-	std::cout << "DEPRECATED location.requestmatch called, path[" << _path << "] req[" << request << "]" << std::endl;
-	if (request.find(_path) == 0)
-		return (filepath = _rootpath + request, true);
-	return false;
-}
-
 bool Location::requestMatch(const Request &request, std::string &filepath) {
 	//std::cout << "BREAK" << std::endl;
 	if (request._path.find(_path) == 0 && methodAvailable(request._method))
 		return (filepath = _rootpath + request._path.substr(_path.size() - 1, std::string::npos), true);
+	return false;
+}
+
+bool Location::methodAvailable(const int method) {
+	if (_get && method == REQ_GET) return true;
+	if (_post && method == REQ_POST) return true;
+	if (_del && method == REQ_DEL) return true;
 	return false;
 }
 
@@ -56,12 +55,4 @@ void Location::printData() {
 	std::cout << "Directory listing: " << std::boolalpha << _dir_list << std::endl;
 	if (!_index_file.empty()) std::cout << "Dir index file: " << _index_file << std::endl;
 	std::cout << "\e[0m";
-}
-
-bool Location::methodAvailable(const int method) {
-	//std::cout << "methodAvailable called, get:" << std::boolalpha << _get << " post:" << _post << " del:" << _del << std::endl;
-	if (_get && method == REQ_GET) return true;
-	if (_post && method == REQ_POST) return true;
-	if (_del && method == REQ_DEL) return true;
-	return false;
 }

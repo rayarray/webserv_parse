@@ -4,15 +4,15 @@ ConfigReference::ConfigReference(const std::string &reference_file) : _section(G
 	std::ifstream file(reference_file);
 	std::string line;
 	if (!file)
-		throw std::runtime_error("Error opening configuration reference file!");
+		throw ConfigReferenceException("Error opening configuration reference file!");
 	if (!std::getline(file, line) || line != "# INTERNAL FILE, DO NOT MODIFY")
-		throw std::runtime_error("Invalid configuration reference file!");
+		throw ConfigReferenceException("Invalid configuration reference file!");
 	while (std::getline(file, line))
 		if (!processLine(line))
-			throw std::runtime_error("Invalid line in configuration reference file!");
+			throw ConfigReferenceException("Invalid line in configuration reference file!");
 	file.close();
 	if (!keyExists(GLOBAL, "server") || !keyExists("server", "listen")) 
-		throw std::runtime_error("Configuration reference file is missing server keyword or section!");
+		throw ConfigReferenceException("Configuration reference file is missing server keyword or section!");
 }
 
 ConfigReference::~ConfigReference() {}
@@ -49,7 +49,7 @@ char ConfigReference::keyParamType(const std::string section, const std::string 
 	size_t pnum = param_num + 2;
 	size_t idx;
 	if (!keyExists(section, keyword, idx))
-		throw std::runtime_error("ConfigReference::keyParamType called with unmatched keyword!");
+		throw ConfigReferenceException("ConfigReference::keyParamType called with unmatched keyword!");
 	if (pnum >= _references.at(idx).size()) {
 		if (_references.at(idx).size() > 2 && _references.at(idx).back().size() == 2)
 			return _references.at(idx).back().at(0);
@@ -62,7 +62,7 @@ char ConfigReference::keyParamType(const std::string section, const std::string 
 bool ConfigReference::keyParamTypeMatch(const std::string section, const std::string keyword, const size_t param_num, const char type) {
 	const char ptype = keyParamType(section, keyword, param_num);
 	if (!validType(ptype) || !validType(type))
-		throw std::runtime_error("Invalid configuration parameter type encountered!");
+		throw ConfigReferenceException("Invalid configuration parameter type encountered!");
 	if (type == ptype)
 		return true;
 	return false;
@@ -70,50 +70,17 @@ bool ConfigReference::keyParamTypeMatch(const std::string section, const std::st
 
 void ConfigReference::checkLine(std::vector<std::string> line) {
 	size_t idx;
-	std::cout << "cfgref::checkLine called with ";
-	for (const std::string &s : line) std::cout << "[" << s << "]";
-	std::cout << std::endl;
 	if (line.at(1) == "}") return;
-	//	throw std::runtime_error("Invalid subsection: " + line.at(0) + "!");
-	//std::string key_found = (keyExists(line.at(0), line.at(1))) ? "\e[0;32mtrue\e[0m" : "\e[0;31mfalse\e[0m";
 	if (!keyExists(line.at(0), line.at(1), idx))
-		throw std::runtime_error("Syntax keyword not found: " + line.at(1));
-	std::cout << "cfgref::checkLine references line: ";
-	for (const std::string &s : _references.at(idx)) std::cout << "[" << s << "]";
-	std:: cout << std::endl;
-	//std::cout << "checking match for (" << line.at(0) << ":" << line.at(1) << ")from defaults: " << "true" << std::endl;
-	//std::cout << "line.size: " << line.size() << "ref.size: " << _references.at(idx).size() << std::endl;
-	//for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) 
-	//	std::cout << "P[" << i << "]:" << keyParamType(idx, i - 2) << "=" << checkType(line.at(i)) << "[" << line.at(i) << "]" << std::endl; 
-	//std::cout << std::endl;
+		throw ConfigReferenceException("Syntax keyword not found: " + line.at(1));
 	if (_references.at(idx).back().size() == 1 && line.size() != _references.at(idx).size())
-		throw std::runtime_error("Argument count does not match at keyword: " + line.at(1));
+		throw ConfigReferenceException("Argument count does not match at keyword: " + line.at(1));
 	for (size_t i = 2; keyParamType(idx, i - 2) && (i < _references.at(idx).size() || i < line.size()); i++) {
-		std::cout << "checking arg [" << i << "][" << line.at(i) << "], keyparamtype:" << keyParamType(idx, i - 2) << " ref.at(idx).size: " << _references.at(idx).size() << " line.size:" << line.size() << std::endl;
 		if (!validType(checkType(line.at(i)), keyParamType(idx, i - 2))) 
-			throw std::runtime_error("Keyword argument type mismatch at keyword: " + line.at(1) + ", argument type: "
+			throw ConfigReferenceException("Keyword argument type mismatch at keyword: " + line.at(1) + ", argument type: "
 			+ typeCharToString(checkType(line.at(i))) + " does not match type:" + typeCharToString(keyParamType(idx, i - 2)));
 	}
 }
-
-// char ConfigReference::extractType(const std::string arg) {
-// 	if (arg.empty()) return 0;
-// 	if (arg.size() == 1 && arg.at(0) == '{') return 'S';
-// 	bool is_type = true;
-// 	if (arg.size() < 11) {
-// 		for (const char &c : arg)
-// 			if (!std::isdigit(c))
-// 				is_type = false;
-// 		if (is_type) return 'N';
-// 	}
-// 	is_type = true;
-// 	for (const char &c : arg) {
-// 		if (!std::isprint(c))
-// 			is_type = false;
-// 		if (is_type) return 'T';
-// 	}
-// 	throw std::runtime_error("Argument type invalid!");
-// }
 
 bool ConfigReference::processLine(const std::string &line) {
 	size_t pos = 0;
@@ -129,7 +96,7 @@ bool ConfigReference::processLine(const std::string &line) {
 	for (;!ws_endl(line, pos) && !ws_wspace(line.at(pos)) && ws_keyword_char(line.at(pos)); pos++)
 		processed_word.push_back(line.at(pos));
 	if (processed_word.size() < 2)
-		throw std::runtime_error("Invalid reference keyword: " + processed_word);
+		throw ConfigReferenceException("Invalid reference keyword: " + processed_word);
 	processed_line.push_back(processed_word);
 	if (ws_endl(line, pos))
 		return true;
@@ -143,7 +110,7 @@ bool ConfigReference::processLine(const std::string &line) {
 		pos++;
 	}
 	if (!ws_endl(line, pos))
-		throw std::runtime_error("Invalid syntax in configuration reference file!");
+		throw ConfigReferenceException("Invalid syntax in configuration reference file!");
 	return (_references.push_back(processed_line), true);
 }
 
@@ -171,7 +138,7 @@ char ConfigReference::checkType(const std::string &s) {
 			is_type = false;
 		if (is_type) return 'T';
 	}
-	throw std::runtime_error("Argument type invalid!");
+	throw ConfigReferenceException("Argument type invalid!");
 }
 
 std::string ConfigReference::typeCharToString(const char c) {

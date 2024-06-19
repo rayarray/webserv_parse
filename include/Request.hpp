@@ -23,14 +23,6 @@ class Request {
 		const size_t _port;
 		const std::string _path;
 		const int _method;
-		// 1 GET 2 POST 3 DELETE
-
-	// private:
-	// 	std::string _host;
-	// 	int _port;
-	// 	std::string _path;
-	// 	int _method;
-	// 	// 1 GET 2 POST 3 DELETE
 };
 
 #endif

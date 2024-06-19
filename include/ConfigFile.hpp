@@ -14,7 +14,6 @@ class ConfigFile {
 		~ConfigFile();
 	
 		// ! check pub priv
-		//bool checkLine();
 		bool emptyLine();
 		bool nextLine();
 		bool processLine();
@@ -23,8 +22,6 @@ class ConfigFile {
 		const std::string &getWord(const size_t &num);
 		const std::string &getLastWord();
 		std::vector<std::string> getVector();
-		
-		void print(); // ! debug
 
 	private:
 		bool processParam(size_t &pos);
@@ -35,7 +32,16 @@ class ConfigFile {
 		std::vector<std::string> _words;
 		std::vector<std::string> _sections;
 		const std::string empty = "";
-		// std::string _section;
+	public:
+		class ConfigFileException : public std::exception {
+			public:
+				ConfigFileException(std::string const msg) : _msg(msg) {}
+				const char *what() const noexcept override { return _msg.c_str(); }
+			private:
+			const std::string _msg;
+		};
+	public: // ! debug
+		void print();
 };
 
 #endif

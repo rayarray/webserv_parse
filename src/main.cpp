@@ -15,7 +15,7 @@ int main(void) {
 	std::vector<Server> servers;
 	while (!conf.endParse()) {
 		servers.push_back(conf.getServer());
-		servers.back().printData();
+		//servers.back().printData();
 	}
 	{	Response response;
 		Request request(1, "www.example.com", 80, "/cgi-bin");

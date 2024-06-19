@@ -4,7 +4,7 @@
 # include <string>
 # include <fstream>
 # include <vector>
-# include "ConfigReference.hpp" // GLOBAL defined here
+# include "ConfigReference.hpp" // ! GLOBAL defined here
 # include "ConfigFile.hpp"
 # include "Server.hpp"
 
@@ -23,19 +23,15 @@ class ConfigParser {
 		Server getServer();
 		bool endParse();
 
-		void printCS();
-
-		//std::string _error;
-		Server getServerOld(); // deprecated
-
 	private:
 		bool storeConfigLine();
 		bool parseSubSection(ConfigSection &subsection);
 
-		//size_t _server_index;
 		std::vector<ConfigSection> _config_sections;
 		ConfigReference _ref;
 		ConfigFile _cfg;
+	public: // ! debug
+		void printCS();
 };
 
 #endif
