@@ -63,15 +63,10 @@ bool ConfigParser::storeConfigLine() {
 		if (section._section_name == _cfg.getSection()) {
 			section.addConfigLine(_cfg.getVector());
 			return true;
-		}
-	}
+	}	}
 	ConfigSection section(_cfg.getSection());
 	section.addConfigLine(_cfg.getVector());
 	_config_sections.push_back(section);
-	return true;
-}
-
-bool ConfigParser::parseSubSection(ConfigSection &subsection) { (void)subsection;
 	return true;
 }
 

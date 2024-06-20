@@ -30,7 +30,6 @@ void Location::initialize() {
 }
 
 bool Location::requestMatch(const Request &request, std::string &filepath) {
-	//std::cout << "BREAK" << std::endl;
 	if (request._path.find(_path) == 0 && methodAvailable(request._method))
 		return (filepath = _rootpath + request._path.substr(_path.size() - 1, std::string::npos), true);
 	return false;

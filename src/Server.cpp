@@ -3,6 +3,7 @@
 
 Server::Server() : ConfigSection("server"), _max_client_body_size(0) {}
 
+// interprets values from the base ConfigSection class and stores them in Server variables
 void Server::initialize() {
 	size_t idx, previous_idx, first = 1;
 	while ((first && doesLineExist("listen", idx)) || (!first && doesLineExist("listen", idx, previous_idx))) {
