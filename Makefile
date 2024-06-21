@@ -17,18 +17,17 @@ INCLUDE		=	$(foreach i, $(INCDIR),-I $(i)) $(foreach l, $(LIBS),-I $(l))
 CFLAGS		=	-Wall -Wextra -Werror -std=c++17
 SFLAGS		=	-fsanitize=address -g
 
-#CC 			=	c++
+CC 			=	g++
+CLANG_CC	=	c++
 
 # == Determine OS and CPU core count =
 OS := $(shell uname)
 
 ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
-  CC:=g++
 endif
 ifeq ($(OS),Darwin) # Assume Mac OS X
   NPROCS:=$(shell sysctl hw.ncpu | grep -o '[0-9]\+')
-  CC:=c++
 endif
 # ====================================
 
@@ -36,8 +35,13 @@ all: $(NAME)
 
 san: fclean setdebug $(NAME)
 
+clang: fclean setclang $(NAME)
+
 setdebug:
 	$(eval CFLAGS := $(CFLAGS) $(SFLAGS))
+
+setclang:
+	$(eval CC := $(CLANG_CC))
 
 $(NAME): $(OBJ) $(LIBARC)
 	$(CC) $(CFLAGS) $(INCLUDE) $(LIBFLG) $(LIBINC) $(MLX42) -o $@ $(OBJ)

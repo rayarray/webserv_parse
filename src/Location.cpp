@@ -36,6 +36,8 @@ bool Location::requestMatch(const Request &request, std::string &filepath) {
 }
 
 bool Location::methodAvailable(const int method) {
+	if (method != REQ_GET || method != REQ_POST || method != REQ_DEL)
+		throw std::logic_error("Location::methodAvailable called with invalid argument");
 	if (_get && method == REQ_GET) return true;
 	if (_post && method == REQ_POST) return true;
 	if (_del && method == REQ_DEL) return true;

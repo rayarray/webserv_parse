@@ -20,11 +20,9 @@ bool ConfigFile::emptyLine() {
 }
 
 bool ConfigFile::nextLine() {
-	if (!std::getline(_file, _line))
-		return false;
-	while (emptyLine())
-		if (!std::getline(_file, _line))
-			return false;
+	do {
+		if (!std::getline(_file, _line)) return false;
+	} while (emptyLine());
 	return true;
 }
 
