@@ -9,21 +9,22 @@
 // this class can handle file reading and CGI execution as well, if so desired
 // but im coding parser first - rleskine 27.5
 
-# define REQ_FILE -1
-# define REQ_CGI -2
-# define REQ_INVALID -100
+# define RES_FILE -1
+# define RES_CGI -2
+# define RES_DIR -3
+# define RES_INVALID -100
 
 class Response {
 	public:
 		Response();
-		Response(const int code, const std::string filepath);
 		Response(const std::string filepath);
-		//Response(CGIExtension &ext, std::string execpath); 
-			// CGIExtension not implemented, can also be deduced from suffix of file name (execpath)
+		Response(const int code, const std::string filepath);
+		Response(const int code, const std::string filepath, const std::string cgipath);
 		~Response();
 
 		const int& getType();
 		const std::string &getPath();
+		const std::string &getCGIPath();
 
 		Response &operator=(const Response assign);
 
@@ -31,8 +32,7 @@ class Response {
 		int _responsecode;
 			// -2 if CGI, -1 if file, positive int if http
 		std::string _path;
-		//CGIExtension &ext; 
-			// CGIExtension not implemented, maybe unnecessary (see above comment)
+		std::string _cgi_path;
 };
 
 #endif

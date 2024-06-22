@@ -17,10 +17,13 @@ class Server : public ConfigSection {
 		bool addServerName(const std::string name);
 		bool addErrorPage(const std::string nbr, const std::string file_path);
 		void addLocation(Location location);
+		void addCGI(const std::string suffix, const std::string interpreter);
 
 		// accessed after setup
 		bool matchRequest(const Request &request);
 		bool matchPort(const size_t port);
+		bool resolveLocation(int const method, std::string const &request_path, size_t &index);
+		Response resolveRequest(int const method, std::string const &request_path);
 		Response resolveRequest(const Request &request);
 		std::string getErrorPage(const size_t page_num);
 

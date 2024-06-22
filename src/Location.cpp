@@ -27,6 +27,16 @@ void Location::initialize() {
 		_dir_list = true;
 	if (doesLineExist("default_index", idx))
 		_index_file = getIndexArg(idx, 1);
+	for (size_t first = 1, previous_idx = 0; (first && doesLineExist("cgi_extension", idx)) 
+		|| (!first && doesLineExist("cgi_extension", idx, previous_idx)); previous_idx = idx, first = 0) {
+		_cgi.insert(std::pair(getIndexArg(idx, 1), getIndexArg(idx, 2)));
+	}
+}
+
+bool Location::requestMatch(const int method, std::string const &request_path, size_t &match_size) {
+	if (methodAvailable(method) && request_path.find(_path) == 0)
+		return (match_size = _path.size(), true);
+	return false;
 }
 
 bool Location::requestMatch(const Request &request, std::string &filepath) {
@@ -35,9 +45,23 @@ bool Location::requestMatch(const Request &request, std::string &filepath) {
 	return false;
 }
 
+std::string Location::makeRootPath(std::string const &request_path) {
+	if (!_index_file.empty() && request_path.back() == '/')
+		return (_rootpath + request_path.substr(_path.size() - 1, std::string::npos) + _index_file);
+	return (_rootpath + request_path.substr(_path.size() - 1, std::string::npos));
+}
+
+bool Location::checkCGI(std::string const &request_path, std::string &cgi_path) {
+	for (std::pair<std::string, std::string> const pair : _cgi) {
+		if (std::string(request_path.rbegin(), request_path.rend()).find(std::string(pair.first.rbegin(), pair.first.rend())) == 0)
+			return (cgi_path = pair.second, true);
+	}
+	return false;
+}
+
 bool Location::methodAvailable(const int method) {
-	if (method != REQ_GET || method != REQ_POST || method != REQ_DEL)
-		throw std::logic_error("Location::methodAvailable called with invalid argument");
+	if (method != REQ_GET && method != REQ_POST && method != REQ_DEL)
+		throw std::logic_error("Location::methodAvailable called with invalid argument: " + std::to_string(method));
 	if (_get && method == REQ_GET) return true;
 	if (_post && method == REQ_POST) return true;
 	if (_del && method == REQ_DEL) return true;

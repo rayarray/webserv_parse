@@ -3,6 +3,7 @@
 
 # include <string>
 # include <stdexcept> // GCC wants this for std::runtime_error
+# include <map>
 # include "ConfigSection.hpp"
 # include "Request.hpp"
 # include <iostream> //debug
@@ -21,7 +22,10 @@ class Location : public ConfigSection {
 		Location(const std::string path);
 
 		void initialize();
+		bool requestMatch(const int method, std::string const &request_path, size_t &match_size);
 		bool requestMatch(const Request &request, std::string &filepath);
+		std::string makeRootPath(std::string const &request_path);
+		bool checkCGI(std::string const &request_path, std::string &cgi_path);
 		
 		const std::string _path;
 
@@ -32,6 +36,7 @@ class Location : public ConfigSection {
 		std::string _rootpath;
 		bool _dir_list;
 		std::string _index_file;
+		std::map<std::string, std::string> _cgi;
 
 	public: //debug
 		void printData();

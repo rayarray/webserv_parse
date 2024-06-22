@@ -80,6 +80,29 @@ Response Server::resolveRequest(const Request &request) {
 	return Response(404, getErrorPage(404));
 }
 
+bool Server::resolveLocation(int const method, std::string const &request_path, size_t &index) {
+	size_t match_size = 0, new_match_size = 0;
+	for (size_t i = 0; i < _locations.size(); i++) {
+		if (_locations.at(i).requestMatch(method, request_path, new_match_size) && new_match_size > match_size) {
+			match_size = new_match_size;
+			index = i;
+	}	}
+	return (match_size);
+}
+
+Response Server::resolveRequest(int const method, std::string const &request_path) {
+	size_t match_index;
+	if (!resolveLocation(method, request_path, match_index))
+		return (Response(404, getErrorPage(404)));
+	std::string root_path = _locations.at(match_index).makeRootPath(request_path);
+	if (request_path.back() == '/' && root_path.back() == '/')
+		return (Response(RES_DIR, root_path));
+	
+	if (std::string cgi_path; _locations.at(match_index).checkCGI(request_path, cgi_path))
+		return (Response(RES_CGI, root_path, cgi_path));
+	return (Response(RES_FILE, root_path));
+}
+
 // searches _error_pages for given error number, returns string if found or empty string if not
 std::string Server::getErrorPage(const size_t page_num) {
 	try {

@@ -66,6 +66,15 @@ int main(void) {
 		else 
 			std::cout << "Failed to match response to server" << std::endl;
 	}
+	{	const std::string req("/cgi-bin/foo.py");
+		Response res = servers.at(0).resolveRequest(REQ_GET, req);
+		std::cout << "\e[1;33mReq path [" << req << "] Response type [" << res.getType() << "] path [" << res.getPath() << "] cgi [" << res.getCGIPath() << "]\e[0m" << std::endl;
+	}
+	{	const std::string req("/");
+		Response res = servers.at(0).resolveRequest(REQ_GET, req);
+		std::cout << "\e[1;33mReq path [" << req << "] Response type [" << res.getType() << "] path [" << res.getPath() << "] cgi [" << res.getCGIPath() << "]\e[0m" << std::endl;
+	}
+
 	for (Server &srv : servers) {
 		size_t page = 404;
 		std::cout << "querying server [" << srv.printId() << "] for error page " << page << ": " << srv.getErrorPage(page) << std::endl;
