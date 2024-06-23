@@ -1,31 +1,31 @@
 #include "ws_functions.hpp"
-#include "Server.hpp"
+#include "ConfigServer.hpp"
 
-Server::Server() : ConfigSection("server"), _max_client_body_size(0) {}
+ConfigServer::ConfigServer() : ConfigSection("Configserver"), _max_client_body_size(0) {}
 
-// interprets values from the base ConfigSection class and stores them in Server variables
-void Server::initialize() {
+// interprets values from the base ConfigSection class and stores them in ConfigServer variables
+void ConfigServer::initialize() {
 	size_t idx, previous_idx, first = 1;
 	while ((first && doesLineExist("listen", idx)) || (!first && doesLineExist("listen", idx, previous_idx))) {
 		for (size_t i = 1; !getIndexArg(idx, i).empty(); i++) {
 			size_t const new_port = std::stoi(getIndexArg(idx, i));
 			if (matchPort(new_port))
-				throw ServerException("Duplicate ports in server");
+				throw ConfigServerException("Duplicate ports in Configserver");
 			if (new_port == 0 || new_port > 65535)
-				throw ServerException("Invalid port specified");
+				throw ConfigServerException("Invalid port specified");
 			_ports.push_back(new_port);
 		}
 		previous_idx = idx;
 		first = 0;
 	}
 	if (_ports.empty()) _ports.push_back(80);
-	if (doesLineExist("server_name", idx)) {
+	if (doesLineExist("Configserver_name", idx)) {
 		for (size_t i = 1; !getIndexArg(idx, i).empty(); i++)
-			_server_names.push_back(getIndexArg(idx, i));
+			_Configserver_names.push_back(getIndexArg(idx, i));
 	}
-	for (const std::string &s : _server_names)
-		if (s == "*" && _server_names.size() != 1)
-			throw ServerException("Server name wildcard '*' used, but other server names also present");
+	for (const std::string &s : _Configserver_names)
+		if (s == "*" && _Configserver_names.size() != 1)
+			throw ConfigServerException("ConfigServer name wildcard '*' used, but other Configserver names also present");
 	if (doesLineExist("error_page", idx)) {
 		addErrorPage(getIndexArg(idx, 1), getIndexArg(idx, 2));
 		size_t previous_idx = idx;
@@ -38,30 +38,30 @@ void Server::initialize() {
 		_max_client_body_size = std::stoi(getIndexArg(idx, 1));
 }
 
-bool Server::addErrorPage(const std::string nbr, const std::string file_path) {
+bool ConfigServer::addErrorPage(const std::string nbr, const std::string file_path) {
 	_error_pages.insert({ std::stoi(nbr), file_path });
 	return true;
 }
 
-void Server::addLocation(Location location) {
+void ConfigServer::addLocation(Location location) {
 	for (const Location &loc : _locations)
 		if (loc._path == location._path)
-			throw ServerException("Server cannot have two matching locations!");
+			throw ConfigServerException("ConfigServer cannot have two matching locations!");
 	_locations.push_back(location);
 }
 
-bool Server::matchRequest(const Request &request) {
+bool ConfigServer::matchRequest(const Request &request) {
 	if (!matchPort(request._port))
 		return false;
-	if (_server_names.size() == 1 && _server_names.at(0) == "*") return true;
-	for (const std::string &s : _server_names) {
+	if (_Configserver_names.size() == 1 && _Configserver_names.at(0) == "*") return true;
+	for (const std::string &s : _Configserver_names) {
 		if (s == request._host)
 			return true;
 	}
 	return false;
 }
 
-Response Server::resolveRequest(const Request &request) {
+Response ConfigServer::resolveRequest(const Request &request) {
 	std::string filepath;
 	if (ws_getlastchar('/', request._path) != 0) {
 		size_t last_slash = ws_getlastchar('/', request._path);
@@ -80,7 +80,7 @@ Response Server::resolveRequest(const Request &request) {
 	return Response(404, getErrorPage(404));
 }
 
-bool Server::resolveLocation(int const method, std::string const &request_path, size_t &index) {
+bool ConfigServer::resolveLocation(int const method, std::string const &request_path, size_t &index) {
 	size_t match_size = 0, new_match_size = 0;
 	for (size_t i = 0; i < _locations.size(); i++) {
 		if (_locations.at(i).requestMatch(method, request_path, new_match_size) && new_match_size > match_size) {
@@ -90,7 +90,7 @@ bool Server::resolveLocation(int const method, std::string const &request_path, 
 	return (match_size);
 }
 
-Response Server::resolveRequest(int const method, std::string const &request_path) {
+Response ConfigServer::resolveRequest(int const method, std::string const &request_path) {
 	size_t match_index;
 	if (!resolveLocation(method, request_path, match_index))
 		return (Response(404, getErrorPage(404)));
@@ -104,7 +104,7 @@ Response Server::resolveRequest(int const method, std::string const &request_pat
 }
 
 // searches _error_pages for given error number, returns string if found or empty string if not
-std::string Server::getErrorPage(const size_t page_num) {
+std::string ConfigServer::getErrorPage(const size_t page_num) {
 	try {
 		return _error_pages.at(page_num);
 	} catch (const std::exception &e) {
@@ -112,21 +112,21 @@ std::string Server::getErrorPage(const size_t page_num) {
 	}
 }
 
-bool Server::matchPort(const size_t port) {
+bool ConfigServer::matchPort(const size_t port) {
 	for (size_t const &_port : _ports)
 		if (port == _port) return true;
 	return false;
 }
 
-void Server::printData() {
-	std::cout << "\e[0;32mServer.printData() : Ports \e[0;92m";
+void ConfigServer::printData() {
+	std::cout << "\e[0;32mConfigServer.printData() : Ports \e[0;92m";
 	for (size_t const &port : _ports)
 		std::cout << "[" << port << "]";
 	std::cout << "\e[0;32m" << std::endl;
-	if (_server_names.size() > 0) std::cout << "Server name: \e[0;92m";
-	for (const std::string &s : _server_names)
+	if (_Configserver_names.size() > 0) std::cout << "ConfigServer name: \e[0;92m";
+	for (const std::string &s : _Configserver_names)
 		std::cout << "[" << s << "]";
-	if (_server_names.size() > 0) std::cout << "\e[0;32m" << std::endl;
+	if (_Configserver_names.size() > 0) std::cout << "\e[0;32m" << std::endl;
 	if (_error_pages.size() > 0) std::cout << "Error pages:" << std::endl;
 	if (_max_client_body_size > 0) std::cout << "Max client body size: " << _max_client_body_size << std::endl;
 	for (const std::pair<const size_t, std::string> &p : _error_pages)
@@ -136,10 +136,10 @@ void Server::printData() {
 	std::cout << "\e[0m";
 }
 
-std::string const Server::printId() const {
+std::string const ConfigServer::printId() const {
 	std::string id("");
-	if (!_server_names.empty())
-		id.append(_server_names.at(0));
+	if (!_Configserver_names.empty())
+		id.append(_Configserver_names.at(0));
 	for (size_t const &p : _ports)
 		id.append(":" + std::to_string(p));
 	return id;

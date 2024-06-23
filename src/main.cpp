@@ -12,14 +12,14 @@ int main(void) {
 	bool start_parse = conf.startParse();
 	std::cout << std::boolalpha << "ConfigParser.startParse() = " << start_parse << std::endl;
 	//Server serv = conf.getServer();
-	std::vector<Server> servers;
+	std::vector<ConfigServer> servers;
 	while (!conf.endParse()) {
 		servers.push_back(conf.getServer());
 		//servers.back().printData();
 	}
 	{	Response response;
 		Request request(1, "www.example.com", 80, "/cgi-bin");
-		for (Server &srv : servers) {
+		for (ConfigServer &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
@@ -28,7 +28,7 @@ int main(void) {
 	}
 	{	Response response;
 		Request request(1, "www.example.com", 80, "/cgi-bin/view.py");
-		for (Server &srv : servers) {
+		for (ConfigServer &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
@@ -37,7 +37,7 @@ int main(void) {
 	}
 	{	Response response;
 		Request request(REQ_POST, "www.example.com", 80, "/cgi-bin/special/specialcgi.py");
-		for (Server &srv : servers) {
+		for (ConfigServer &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
@@ -46,7 +46,7 @@ int main(void) {
 	}
 	{	Response response;
 		Request request(2, "otherserver.com", 8080, "/foobar.html");
-		for (Server &srv : servers) {
+		for (ConfigServer &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
@@ -57,7 +57,7 @@ int main(void) {
 	}
 	{	Response response;
 		Request request(2, "breaksparse.org", 80, "/shouldbe404.html");
-		for (Server &srv : servers) {
+		for (ConfigServer &srv : servers) {
 			if (srv.matchRequest(request)) {
 				response = srv.resolveRequest(request);
 		}	}
@@ -75,7 +75,7 @@ int main(void) {
 		std::cout << "\e[1;33mReq path [" << req << "] Response type [" << res.getType() << "] path [" << res.getPath() << "] cgi [" << res.getCGIPath() << "]\e[0m" << std::endl;
 	}
 
-	for (Server &srv : servers) {
+	for (ConfigServer &srv : servers) {
 		size_t page = 404;
 		std::cout << "querying server [" << srv.printId() << "] for error page " << page << ": " << srv.getErrorPage(page) << std::endl;
 	}

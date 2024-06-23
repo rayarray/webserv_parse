@@ -6,7 +6,7 @@
 # include <vector>
 # include "ConfigReference.hpp" // ! GLOBAL defined here
 # include "ConfigFile.hpp"
-# include "Server.hpp"
+# include "ConfigServer.hpp"
 
 // usage: create instance with config file path, 
 // start parsing with startParse() which returns true if valid conf
@@ -20,7 +20,7 @@ class ConfigParser {
 		~ConfigParser();
 
 		bool startParse();
-		Server getServer();
+		ConfigServer getServer();
 		bool endParse();
 
 	private:

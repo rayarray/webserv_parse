@@ -21,11 +21,11 @@ bool ConfigParser::startParse() {
 	return (true);
 }
 
-Server ConfigParser::getServer() {
+ConfigServer ConfigParser::getServer() {
 	if (_cfg.getSection() != "global" || _cfg.getWord(0) != "server" || _cfg.getLastWord() != "{")
 		throw std::runtime_error("Internal error: ConfigParser::getServer executed on non-server begin line");
 	_ref.checkLine(_cfg.getVector());
-	Server srv;
+	ConfigServer srv;
 	while (_cfg.nextLine() && _cfg.processLine() && _cfg.getSection() != GLOBAL) {
 		_ref.checkLine(_cfg.getVector());
 		if (_cfg.getWord(0) == "location" && _cfg.getLastWord() == "{") {
