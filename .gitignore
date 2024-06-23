@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-parsetest
+webserv
 .vscode/settings.json
 deprecated.txt
 cfgparser.txt

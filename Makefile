@@ -1,7 +1,8 @@
-NAME		=	parsetest
+NAME		=	webserv
 
 SRC			=	main.cpp ConfigParser.cpp ConfigSection.cpp ConfigReference.cpp ConfigFile.cpp \
-				Server.cpp Location.cpp Request.cpp Response.cpp
+				ConfigServer.cpp Location.cpp Request.cpp Response.cpp Manager-CGI.cpp Manager-Client.cpp \
+				Manager-Config.cpp Manager-Poll.cpp Manager-Request.cpp manager.cpp server.cpp socket.cpp
 
 SRCDIR		=	src
 OBJDIR		=	obj
