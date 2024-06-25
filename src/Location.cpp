@@ -1,7 +1,8 @@
 #include "Location.hpp"
 #include "ws_functions.hpp"
 
-Location::Location(const std::string path) : ConfigSection("location"), _path(path), _get(false), _post(false), _del(false), _dir_list(false) {}
+Location::Location(const std::string path) : ConfigSection("location"), 
+	_path(path), _get(false), _post(false), _del(false), _dir_list(false), _matched_cgi(std::pair("", "")) {}
 
 void Location::initialize() {
 	size_t idx = 0;
@@ -16,9 +17,8 @@ void Location::initialize() {
 			else
 				throw std::runtime_error("Invalid method specified in location!");
 		}
-	} else {
-		_get = true;
-	}
+	} 
+	// else { _get = true; } // ! removed GET by default, using none by default
 	if (doesLineExist("root", idx))
 		_rootpath = getIndexArg(idx, 1);
 	if (doesLineExist("rewrite", idx))
@@ -33,31 +33,37 @@ void Location::initialize() {
 	}
 }
 
-bool Location::requestMatch(const int method, std::string const &request_path, size_t &match_size) {
-	if (methodAvailable(method) && request_path.find(_path) == 0)
+bool Location::requestMatch(const int method, std::string const &request_path, size_t &match_size) { (void)method;
+	if (request_path.find(_path) == 0) 
 		return (match_size = _path.size(), true);
 	return false;
 }
 
 bool Location::requestMatch(const Request &request, std::string &filepath) {
 	if (request._path.find(_path) == 0 && methodAvailable(request._method))
-		return (filepath = _rootpath + request._path.substr(_path.size() - 1, std::string::npos), true);
+		return (filepath = _rootpath + request._path.substr(_path.size() -1, std::string::npos), true);
 	return false;
 }
 
 std::string Location::makeRootPath(std::string const &request_path) {
 	if (!_index_file.empty() && request_path.back() == '/')
-		return (_rootpath + request_path.substr(_path.size() - 1, std::string::npos) + _index_file);
-	return (_rootpath + request_path.substr(_path.size() - 1, std::string::npos));
+		return (_rootpath + request_path.substr(_path.size(), std::string::npos) + _index_file);
+	return (_rootpath + request_path.substr(_path.size(), std::string::npos));
 }
 
 bool Location::checkCGI(std::string const &request_path, std::string &cgi_path) {
 	for (std::pair<std::string, std::string> const pair : _cgi) {
 		if (std::string(request_path.rbegin(), request_path.rend()).find(std::string(pair.first.rbegin(), pair.first.rend())) == 0)
-			return (cgi_path = pair.second, true);
+			return (cgi_path = pair.second, _matched_cgi = pair, true);
 	}
-	return false;
+	return (_matched_cgi = std::pair("", ""), false);
 }
+
+std::string Location::getLastCGISuffix() { return _matched_cgi.first; }
+std::string Location::getLastCGIPath() { return _matched_cgi.second; }
+bool Location::directoryIndexAllowed() { return _dir_list; }
+std::string Location::defaultIndexFile() { return _index_file; }
+std::string Location::getRootPath() { return _rootpath; }
 
 bool Location::methodAvailable(const int method) {
 	if (method != REQ_GET && method != REQ_POST && method != REQ_DEL)

@@ -26,17 +26,25 @@ class Location : public ConfigSection {
 		bool requestMatch(const Request &request, std::string &filepath);
 		std::string makeRootPath(std::string const &request_path);
 		bool checkCGI(std::string const &request_path, std::string &cgi_path);
+
+		//added to make compatible with existing Server
+		std::string getLastCGISuffix();
+		std::string getLastCGIPath();
+		bool directoryIndexAllowed();
+		std::string defaultIndexFile();
+		std::string getRootPath();
+		bool methodAvailable(const int method);
 		
 		const std::string _path;
 
 	private:
-		bool methodAvailable(const int method);
 		bool _get, _post, _del;
 		std::string _rewrite;
 		std::string _rootpath;
 		bool _dir_list;
 		std::string _index_file;
 		std::map<std::string, std::string> _cgi;
+		std::pair<std::string, std::string> _matched_cgi;
 
 	public: //debug
 		void printData();
